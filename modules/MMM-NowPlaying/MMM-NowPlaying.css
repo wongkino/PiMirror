@@ -1,0 +1,251 @@
+/* ================================================================
+   MMM-NowPlaying — mirror display styles
+   ================================================================ */
+
+.mmm-nowplaying-wrapper {
+	box-sizing: border-box;
+	overflow: hidden;
+	font-size: 0.92em;
+}
+
+/* ----------------------------------------------------------------
+   Big card — single active speaker
+   Full-bleed art background with gradient overlay
+   ---------------------------------------------------------------- */
+
+.nowplaying-card {
+	position: relative;
+	overflow: hidden;
+	border-radius: 10px;
+	min-height: 190px;
+}
+
+.nowplaying-card.paused {
+	opacity: 0.75;
+}
+
+/* Art fills the card as a background layer */
+.nowplaying-art-wrap {
+	position: absolute;
+	inset: 0;
+	background: rgba(255, 255, 255, 0.04);
+}
+
+.nowplaying-art-img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+	/* opacity set inline from artOpacity setting */
+}
+
+.nowplaying-art-placeholder {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 3.5em;
+	color: rgba(255, 255, 255, 0.12);
+}
+
+/* Gradient overlay — ensures text is legible regardless of art colour */
+.nowplaying-art-overlay {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		to bottom,
+		rgba(0, 0, 0, 0.08) 0%,
+		rgba(0, 0, 0, 0.55) 55%,
+		rgba(0, 0, 0, 0.88) 100%
+	);
+}
+
+/* Foreground content floats above art */
+.nowplaying-card-body {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	align-items: center;
+	min-height: 190px;
+	padding: 14px;
+	gap: 4px;
+}
+
+.nowplaying-title {
+	font-size: 1.05em;
+	font-weight: 700;
+	color: #fff;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 100%;
+	text-align: center;
+}
+
+.nowplaying-sub {
+	font-size: 0.82em;
+	color: rgba(255, 255, 255, 0.62);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	margin-bottom: 2px;
+	width: 100%;
+	text-align: center;
+}
+
+.nowplaying-device-label {
+	font-size: 0.63em;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	color: rgba(255, 255, 255, 0.32);
+	margin-bottom: 6px;
+	width: 100%;
+	text-align: center;
+}
+
+/* Controls */
+.nowplaying-controls {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 8px;
+}
+
+.nowplaying-btn {
+	background: rgba(255, 255, 255, 0.08);
+	border: none;
+	color: rgba(255, 255, 255, 0.55);
+	width: 38px;
+	height: 38px;
+	border-radius: 50%;
+	font-size: 0.95rem;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	transition: background 0.15s, color 0.15s, transform 0.1s;
+	line-height: 1;
+	padding: 0;
+}
+
+.nowplaying-btn:hover {
+	background: rgba(255, 255, 255, 0.15);
+	color: #fff;
+}
+
+.nowplaying-btn:active {
+	transform: scale(0.9);
+}
+
+/* Play / pause is slightly larger */
+.nowplaying-btn-primary {
+	width: 48px;
+	height: 48px;
+	background: rgba(255, 255, 255, 0.14);
+	color: #fff;
+	font-size: 1.1rem;
+}
+
+.nowplaying-btn-primary:hover {
+	background: rgba(255, 255, 255, 0.22);
+}
+
+/* ----------------------------------------------------------------
+   List mode — multiple active speakers
+   ---------------------------------------------------------------- */
+
+.nowplaying-list {
+	display: flex;
+	flex-direction: column;
+}
+
+.nowplaying-list-item {
+	display: flex;
+	align-items: stretch;
+	gap: 12px;
+	padding: 9px 0;
+	border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.nowplaying-list-item:first-child {
+	border-top: none;
+	padding-top: 0;
+}
+
+.nowplaying-list-item.paused {
+	opacity: 0.55;
+}
+
+/* Thumbnail — its height is the constraint; info panel stretches to match */
+.nowplaying-list-thumb {
+	width: 72px;
+	height: 72px;
+	border-radius: 5px;
+	object-fit: cover;
+	flex-shrink: 0;
+}
+
+.nowplaying-list-thumb-ph {
+	width: 72px;
+	height: 72px;
+	border-radius: 5px;
+	background: rgba(255, 255, 255, 0.06);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: rgba(255, 255, 255, 0.18);
+	font-size: 1.4em;
+	flex-shrink: 0;
+}
+
+/* Info panel — 3 rows spread evenly to fill thumbnail height */
+.nowplaying-list-info {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+/* Row 1: speaker name */
+.nowplaying-list-device {
+	font-size: 0.65em;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: rgba(255, 255, 255, 0.35);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* Row 2: song — artist */
+.nowplaying-list-track {
+	font-size: 0.85em;
+	color: #ddd;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* Row 3: compact controls */
+.nowplaying-list-controls {
+	justify-content: flex-start;
+	gap: 4px;
+}
+
+.nowplaying-list-controls .nowplaying-btn {
+	width: 24px;
+	height: 24px;
+	font-size: 0.65rem;
+}
+
+.nowplaying-list-controls .nowplaying-btn-primary {
+	width: 28px;
+	height: 28px;
+	font-size: 0.75rem;
+}

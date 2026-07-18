@@ -1,0 +1,18 @@
+{
+  "devices": {
+    "10.0.1.53": {
+      "name": "客廳的電視",
+      "host": "10.0.1.53",
+      "port": 8009,
+      "lastSeen": "2026-07-18T19:21:16.587Z",
+      "manual": false
+    },
+    "10.0.1.135": {
+      "name": "Samsung Soundbar",
+      "host": "10.0.1.135",
+      "port": 8009,
+      "lastSeen": "2026-07-18T19:21:16.610Z",
+      "manual": true
+    }
+  }
+}

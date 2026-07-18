@@ -35,6 +35,7 @@ Module.register("calendar", {
 		hideOngoing: false,
 		hideTime: false,
 		hideDuplicates: true,
+		hideWhenEmpty: false,
 		showTimeToday: false,
 		colored: false,
 		forceUseCurrentTime: false,
@@ -238,7 +239,14 @@ Module.register("calendar", {
 		if (events.length === 0) {
 			wrapper.innerHTML = this.loaded ? this.translate("EMPTY") : this.translate("LOADING");
 			wrapper.className = `${this.config.tableClass} dimmed`;
+			if (this.config.hideWhenEmpty && this.loaded && !this.error) {
+				this.hide(0, { lockString: "calendar-empty" });
+			}
 			return wrapper;
+		}
+
+		if (this.config.hideWhenEmpty) {
+			this.show(0, { lockString: "calendar-empty" });
 		}
 
 		let currentFadeStep = 0;

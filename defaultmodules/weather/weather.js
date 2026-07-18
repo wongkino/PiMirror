@@ -68,7 +68,12 @@ Module.register("weather", {
 
 	// Define required scripts.
 	getStyles () {
-		return ["font-awesome.css", "weather-icons.css", `${this.getThemeDir()}weather.css`];
+		// Loader treats any filename containing "/" as a site-root path.
+		// Theme CSS must be an absolute /defaultmodules/... URL, otherwise it 404s.
+		const themeCss = this.getThemeDir()
+			? `/defaultmodules/weather/${this.getThemeDir()}weather.css`
+			: `${this.getThemeDir()}weather.css`;
+		return ["font-awesome.css", "weather-icons.css", themeCss];
 	},
 
 	// Return the scripts that are necessary for the weather module.

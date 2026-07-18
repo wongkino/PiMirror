@@ -1,0 +1,40 @@
+{
+  "name": "mmm-homekit",
+  "version": "1.2.0",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Fabrizz/MMM-HomeKit.git"
+  },
+  "keywords": [
+    "MagicMirror",
+    "MagicMirror2",
+    "MM2",
+    "Homekit",
+    "apple-homekit",
+    "hap-protocol",
+    "homeassistant",
+    "homebridge",
+    "apple-accessory"
+  ],
+  "author": {
+    "name": "Fabrizz",
+    "email": "contact@fabriz.co",
+    "url": "https://fabriz.co/"
+  },
+  "bugs": {
+    "url": "https://github.com/Fabrizz/MMM-HomeKit/issues"
+  },
+  "homepage": "https://github.com/Fabrizz/MMM-HomeKit#readme",
+  "license": "MIT",
+  "scripts": {
+    "postinstall": "node scripts/apply-hap-crypto-patch.js"
+  },
+  "dependencies": {
+    "@noble/ciphers": "^2.2.0",
+    "express": "^4.18.3",
+    "hap-nodejs": "^1.1.0",
+    "object-hash": "^3.0.0",
+    "qrcode": "^1.5.1"
+  }
+}

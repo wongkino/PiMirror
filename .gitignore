@@ -16,6 +16,7 @@ jspm_modules
 
 # Visual Studio Code ignoramuses.
 .vscode/
+.cursor/
 
 # IDE Code ignoramuses.
 .idea/
@@ -54,13 +55,55 @@ Temporary Items
 .directory
 .Trash-*
 
-# Ignore all modules
+# Ignore third-party / local modules by default, then whitelist this setup.
 /modules/*
+!/modules/MMM-EnvEditor/
+!/modules/MMM-EnvEditor/**
+!/modules/MMM-FullPage/
+!/modules/MMM-FullPage/**
+!/modules/MMM-HKO-SpecialTips/
+!/modules/MMM-HKO-SpecialTips/**
+!/modules/MMM-HK-Transport-ETA/
+!/modules/MMM-HK-Transport-ETA/**
+!/modules/MMM-HomeKit/
+!/modules/MMM-HomeKit/**
+!/modules/MMM-LocalIP/
+!/modules/MMM-LocalIP/**
+!/modules/MMM-NowPlaying/
+!/modules/MMM-NowPlaying/**
+!/modules/MMM-page-indicator/
+!/modules/MMM-page-indicator/**
+!/modules/MMM-pages/
+!/modules/MMM-pages/**
+!/modules/MMM-PageSwipe/
+!/modules/MMM-PageSwipe/**
+!/modules/MMM-PlayerFocus/
+!/modules/MMM-PlayerFocus/**
+!/modules/MMM-Remote-Control/
+!/modules/MMM-Remote-Control/**
+!/modules/MMM-Sonarr/
+!/modules/MMM-Sonarr/**
+!/modules/MMM-UniFiProtect/
+!/modules/MMM-UniFiProtect/**
 
-# Ignore users config file but keep the samples.
-config
+# Never commit module dependencies (install per module as needed).
+modules/**/node_modules/
+
+# Track shared config (env placeholders) but keep secrets local.
+config/*
+!config/config.js
 !config/config.js.sample
+!config/custom.css
 !config/custom.css.sample
+!config/config.env.sample
+
+# Local secrets / generated (redundant with config/* but explicit)
+config/config.env
+config/basepath.js
+
+# Local tooling / backups (not part of runtime)
+config-hk-toolkit/
+defaultmodules/weather/.backup-pre-animated/
 
 # Vim
 ## swap
