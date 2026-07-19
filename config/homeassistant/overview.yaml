@@ -1,145 +1,318 @@
-# Home Assistant Overview 導覽佈局備份
-# 頂部導覽：家 / 臥室 / 客廳 / NAS
+# Home Assistant 總覽設計（已套用）
+# 導覽：家 / 臥室 / 客廳 / NAS
+# 更新：2026-07-19T08:57:19.565Z
 
-title: 家
-views:
-  - title: 家
-    path: home
-    icon: mdi:home
-    type: sections
-    max_columns: 2
-    sections:
-      - type: grid
-        cards:
-          - type: heading
-            heading: 狀態
-            heading_style: title
-          - type: tile
-            entity: person.wong_ka_wai_kino
-            name: Kino
-          - type: tile
-            entity: weather.forecast_jia
-            name: 天氣
-          - type: tile
-            entity: switch.magicmirror_screen
-            name: MagicMirror 螢幕
-            icon: mdi:mirror-rectangle
-            features:
-              - type: toggle
-      - type: grid
-        cards:
-          - type: heading
-            heading: 清單
-            heading_style: title
-          - type: todo-list
-            entity: todo.shopping_list
-            title: 購物清單
-
-  - title: 臥室
-    path: bedroom
-    icon: mdi:bed
-    type: sections
-    max_columns: 2
-    sections:
-      - type: grid
-        cards:
-          - type: heading
-            heading: 冷氣
-            heading_style: title
-          - type: thermostat
-            entity: climate.wo_shi_leng_qi
-            name: 冷氣
-            features:
-              - type: climate-hvac-modes
-          - type: tile
-            entity: sensor.wo_shi_leng_qi_wen_du
-            name: 目前溫度
-            icon: mdi:thermometer
-      - type: grid
-        cards:
-          - type: heading
-            heading: 燈光與開關
-            heading_style: title
-          - type: tile
-            entity: switch.magicmirror_screen
-            name: MagicMirror 螢幕
-            icon: mdi:mirror-rectangle
-            features:
-              - type: toggle
-          - type: tile
-            entity: light.wo_shi_shui_fang_deng
-            name: 睡房燈
-            features:
-              - type: light-brightness
-          - type: tile
-            entity: light.aqara_wall_switch_d1
-            name: 燈製
-          - type: tile
-            entity: switch.wo_shi_feng_shan
-            name: 風扇
-          - type: tile
-            entity: switch.wo_shi_04018130496
-            name: 蚊香
-      - type: grid
-        cards:
-          - type: heading
-            heading: 媒體
-            heading_style: title
-          - type: media-control
-            entity: media_player.wo_shi_homepod_mini
-          - type: media-control
-            entity: media_player.shui_fang_shui_fang_de_apple_tv
-          - type: media-control
-            entity: media_player.av_samsung_soundbar_q990b
-
-  - title: 客廳
-    path: living
-    icon: mdi:sofa
-    type: sections
-    max_columns: 2
-    sections:
-      - type: grid
-        cards:
-          - type: heading
-            heading: 媒體
-            heading_style: title
-          - type: media-control
-            entity: media_player.ke_ting_dian_shi
-
-  - title: NAS
-    path: nas
-    icon: mdi:nas
-    type: sections
-    max_columns: 2
-    sections:
-      - type: grid
-        cards:
-          - type: heading
-            heading: 系統
-            heading_style: title
-          - type: tile
-            entity: binary_sensor.kinonas_security_status
-            name: 安全狀態
-          - type: tile
-            entity: sensor.kinonas_cpu_utilization_total
-            name: CPU
-          - type: tile
-            entity: sensor.kinonas_memory_usage_real
-            name: 記憶體
-          - type: tile
-            entity: sensor.kinonas_download_throughput
-            name: 下載
-          - type: tile
-            entity: sensor.kinonas_upload_throughput
-            name: 上傳
-      - type: grid
-        cards:
-          - type: heading
-            heading: 儲存空間
-            heading_style: title
-          - type: tile
-            entity: sensor.kinonas_volume_2_volume_used
-            name: Volume 2
-          - type: tile
-            entity: sensor.kinonas_volume_3_volume_used
-            name: Volume 3
+{
+  "title": "家",
+  "views": [
+    {
+      "title": "家",
+      "path": "home",
+      "icon": "mdi:home-outline",
+      "type": "sections",
+      "max_columns": 3,
+      "dense_section_placement": true,
+      "sections": [
+        {
+          "type": "grid",
+          "column_span": 1,
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "今日",
+              "heading_style": "title"
+            },
+            {
+              "type": "tile",
+              "entity": "weather.forecast_jia",
+              "name": "天氣",
+              "show_entity_id": false
+            },
+            {
+              "type": "tile",
+              "entity": "person.wong_ka_wai_kino",
+              "name": "Kino"
+            },
+            {
+              "type": "tile",
+              "entity": "switch.magicmirror_screen",
+              "name": "MagicMirror",
+              "icon": "mdi:mirror-rectangle",
+              "features": [
+                {
+                  "type": "toggle"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "column_span": 1,
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "睡房速覽",
+              "heading_style": "title"
+            },
+            {
+              "type": "tile",
+              "entity": "climate.wo_shi_leng_qi",
+              "name": "冷氣",
+              "features": [
+                {
+                  "type": "climate-hvac-modes"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.wo_shi_shui_fang_deng",
+              "name": "睡房燈",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "media_player.wo_shi_homepod_mini",
+              "name": "HomePod"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "column_span": 1,
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "待辦",
+              "heading_style": "title"
+            },
+            {
+              "type": "todo-list",
+              "entity": "todo.shopping_list",
+              "title": "購物清單"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "臥室",
+      "path": "bedroom",
+      "icon": "mdi:bed-king-outline",
+      "type": "sections",
+      "max_columns": 2,
+      "dense_section_placement": true,
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "冷氣",
+              "heading_style": "title"
+            },
+            {
+              "type": "thermostat",
+              "entity": "climate.wo_shi_leng_qi",
+              "name": "冷氣",
+              "features": [
+                {
+                  "type": "climate-hvac-modes"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "sensor.wo_shi_leng_qi_wen_du",
+              "name": "目前溫度",
+              "icon": "mdi:thermometer"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "燈光與開關",
+              "heading_style": "title"
+            },
+            {
+              "type": "tile",
+              "entity": "switch.magicmirror_screen",
+              "name": "MagicMirror 螢幕",
+              "icon": "mdi:mirror-rectangle",
+              "features": [
+                {
+                  "type": "toggle"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.wo_shi_shui_fang_deng",
+              "name": "睡房燈",
+              "features": [
+                {
+                  "type": "light-brightness"
+                }
+              ]
+            },
+            {
+              "type": "tile",
+              "entity": "light.aqara_wall_switch_d1",
+              "name": "燈掣"
+            },
+            {
+              "type": "tile",
+              "entity": "switch.wo_shi_feng_shan",
+              "name": "風扇",
+              "icon": "mdi:fan"
+            },
+            {
+              "type": "tile",
+              "entity": "switch.wo_shi_04018130496",
+              "name": "蚊香",
+              "icon": "mdi:bug"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "媒體",
+              "heading_style": "title"
+            },
+            {
+              "type": "media-control",
+              "entity": "media_player.wo_shi_homepod_mini"
+            },
+            {
+              "type": "media-control",
+              "entity": "media_player.shui_fang_shui_fang_de_apple_tv"
+            },
+            {
+              "type": "media-control",
+              "entity": "media_player.av_samsung_soundbar_q990b"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "客廳",
+      "path": "living",
+      "icon": "mdi:sofa-outline",
+      "type": "sections",
+      "max_columns": 2,
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "影音",
+              "heading_style": "title"
+            },
+            {
+              "type": "media-control",
+              "entity": "media_player.ke_ting_dian_shi"
+            },
+            {
+              "type": "tile",
+              "entity": "media_player.plex_plex_for_lg_lg_27u511sa_wa",
+              "name": "Plex（LG）"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "NAS",
+      "path": "nas",
+      "icon": "mdi:nas",
+      "type": "sections",
+      "max_columns": 2,
+      "sections": [
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "系統狀態",
+              "heading_style": "title"
+            },
+            {
+              "type": "tile",
+              "entity": "binary_sensor.kinonas_security_status",
+              "name": "安全狀態"
+            },
+            {
+              "type": "tile",
+              "entity": "sensor.kinonas_cpu_utilization_total",
+              "name": "CPU",
+              "icon": "mdi:cpu-64-bit"
+            },
+            {
+              "type": "tile",
+              "entity": "sensor.kinonas_memory_usage_real",
+              "name": "記憶體",
+              "icon": "mdi:memory"
+            },
+            {
+              "type": "tile",
+              "entity": "sensor.kinonas_download_throughput",
+              "name": "下載",
+              "icon": "mdi:download-network"
+            },
+            {
+              "type": "tile",
+              "entity": "sensor.kinonas_upload_throughput",
+              "name": "上傳",
+              "icon": "mdi:upload-network"
+            }
+          ]
+        },
+        {
+          "type": "grid",
+          "cards": [
+            {
+              "type": "heading",
+              "heading": "儲存空間",
+              "heading_style": "title"
+            },
+            {
+              "type": "tile",
+              "entity": "sensor.kinonas_volume_2_volume_used",
+              "name": "Volume 2",
+              "icon": "mdi:harddisk"
+            },
+            {
+              "type": "tile",
+              "entity": "sensor.kinonas_volume_2_status",
+              "name": "Volume 2 狀態"
+            },
+            {
+              "type": "tile",
+              "entity": "sensor.kinonas_volume_3_volume_used",
+              "name": "Volume 3",
+              "icon": "mdi:harddisk"
+            },
+            {
+              "type": "tile",
+              "entity": "sensor.kinonas_volume_3_status",
+              "name": "Volume 3 狀態"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

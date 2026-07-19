@@ -156,23 +156,6 @@
 	font-size: var(--font-size-small);
 }
 
-/* Home Assistant sensors — compact on 320px */
-.module.MMM-homeassistant-sensors {
-	text-align: left;
-	width: 100%;
-}
-
-.module.MMM-homeassistant-sensors ticker > header:empty {
-	display: none;
-}
-
-.ha-small {
-	font-size: var(--font-size-small);
-	line-height: 1.35;
-	font-weight: 400;
-	color: var(--color-text);
-}
-
 /* Home Assistant Touch — fit 320px portrait */
 .module.MMM-HomeAssistant-Touch {
 	text-align: center;
