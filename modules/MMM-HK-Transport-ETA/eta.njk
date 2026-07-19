@@ -5,9 +5,11 @@
                 <th class="align-left bright">
                     {{ "LINE" | translate }}
                 </th>
+                {% if config.showDestination !== false %}
                 <th class="align-left bright">
                     {{ "DESTINATION" | translate }}
                 </th>
+                {% endif %}
                 <th class="align-right bright">
                     {{ "DEPARTURE" | translate }}
                 </th>
@@ -22,9 +24,11 @@
                                 {{ f.line }}
                             </td>
                         {% endif %}
+                        {% if config.showDestination !== false %}
                         <td class="align-left bright">
                             {{ eta.dest }}
                         </td>
+                        {% endif %}
                         <td class="align-right bright">
                             {% if eta.time %}
                                 {% if config.displayRelativeTime %}
@@ -45,7 +49,7 @@
             {% else %}
                 {# A row is required here — a bare <div> is invalid inside a <table> #}
                 <tr>
-                    <td colspan="3" class="dimmed light small">
+                    <td colspan="{% if config.showDestination !== false %}3{% else %}2{% endif %}" class="dimmed light small">
                         {{ "EMPTY" | translate }}
                     </td>
                 </tr>

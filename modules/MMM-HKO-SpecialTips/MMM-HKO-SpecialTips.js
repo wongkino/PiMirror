@@ -4,7 +4,8 @@
 
 Module.register("MMM-HKO-SpecialTips", {
 	defaults: {
-		updateInterval: 5 * 60 * 1000,
+		// Official open-data frequency is「當有更新數據時」; 1 min is a practical poll interval.
+		updateInterval: 60 * 1000,
 		lang: "tc",
 		maxTips: 2,
 		header: "特別天氣提示",

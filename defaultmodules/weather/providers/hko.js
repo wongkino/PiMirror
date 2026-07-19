@@ -134,12 +134,25 @@ class HKOProvider {
 
 	#handleResponse (data) {
 		try {
-			let weatherData;
+			if (this.config.type === "current") {
+				const weatherData = this.#generateCurrentWeather(data);
+				this.#enrichCurrentWithPsr(weatherData)
+					.then((enriched) => {
+						if (this.onDataCallback && enriched) {
+							this.onDataCallback(enriched);
+						}
+					})
+					.catch((error) => {
+						Log.error("[hko] Error enriching current weather with PSR:", error);
+						if (this.onDataCallback && weatherData) {
+							this.onDataCallback(weatherData);
+						}
+					});
+				return;
+			}
 
+			let weatherData;
 			switch (this.config.type) {
-				case "current":
-					weatherData = this.#generateCurrentWeather(data);
-					break;
 				case "forecast":
 				case "daily":
 					weatherData = this.#generateForecast(data);
@@ -157,6 +170,55 @@ class HKOProvider {
 			Log.error("[hko] Error processing weather data:", error);
 			this.#sendError(error.message);
 		}
+	}
+
+	/**
+	 * Attach today's HKO PSR (probability of significant rain) from the 9-day forecast.
+	 * Current weather (rhrread) only has past rainfall totals, not PSR.
+	 * @param {object} weather Current weather object
+	 * @returns {Promise<object>}
+	 */
+	async #enrichCurrentWithPsr (weather) {
+		try {
+			const params = new URLSearchParams({
+				dataType: "fnd",
+				lang: this.#lang()
+			});
+			const response = await fetch(`${this.config.apiBase}?${params}`, {
+				headers: { "Cache-Control": "no-cache" },
+				signal: AbortSignal.timeout(15000)
+			});
+			if (!response.ok) return weather;
+
+			const fnd = await response.json();
+			const day = this.#todayForecastDay(fnd);
+			if (!day?.PSR) return weather;
+
+			weather.psr = `${day.PSR}`.trim();
+			const pop = this.#psrToProbability(day.PSR);
+			if (pop !== null) {
+				weather.precipitationProbability = pop;
+			}
+		} catch (error) {
+			Log.warn(`[hko] Failed to fetch PSR for current weather: ${error.message}`);
+		}
+		return weather;
+	}
+
+	#todayForecastDay (fnd) {
+		const days = fnd?.weatherForecast;
+		if (!Array.isArray(days) || days.length === 0) return null;
+
+		const hkt = new Date(
+			new Date().toLocaleString("en-US", { timeZone: "Asia/Hong_Kong" })
+		);
+		const key = [
+			hkt.getFullYear(),
+			String(hkt.getMonth() + 1).padStart(2, "0"),
+			String(hkt.getDate()).padStart(2, "0")
+		].join("");
+
+		return days.find((day) => day.forecastDate === key) || days[0];
 	}
 
 	#generateCurrentWeather (data) {

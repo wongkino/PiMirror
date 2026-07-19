@@ -77,6 +77,19 @@ Module.register('MMM-pages', {
 
     this.hiddenPageTimer = null;
     this.permanentlyHiddenModules = new Set();
+    this._resyncTimer = null;
+
+    // Re-apply page visibility after display wake / compositor resume
+    // (opacity on .hidden modules can be restored incorrectly on Wayland).
+    const scheduleResync = () => {
+      clearTimeout(this._resyncTimer);
+      this._resyncTimer = setTimeout(() => this.resyncCurrentPage(), 250);
+    };
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) scheduleResync();
+    });
+    window.addEventListener('focus', scheduleResync);
+    window.addEventListener('pageshow', scheduleResync);
   },
 
   /**
@@ -133,6 +146,13 @@ Module.register('MMM-pages', {
         this.animatePageChange();
         this.resetTimerWithDelay(0);
         this.registerApiActions();
+        break;
+      case 'USER_PRESENCE':
+        // MONITORON broadcasts USER_PRESENCE=true — force page visibility resync
+        if (payload === true) {
+          Log.log('[MMM-pages] USER_PRESENCE true — resyncing page visibility');
+          this.resyncCurrentPage();
+        }
         break;
       case 'QUERY_PAGE_NUMBER':
         this.sendNotification('PAGE_NUMBER_IS', this.curPage);
@@ -204,6 +224,21 @@ Module.register('MMM-pages', {
       this.sendNotification('NEW_PAGE', this.curPage);
     } else {
       Log.error(`[MMM-pages] Pages are not properly defined! Expected array, got ${typeof this.config.modules}`);
+    }
+  },
+
+  /**
+   * Re-apply hide/show for the current page with no animation.
+   * Used after display wake when compositor may restore opacity on hidden modules.
+   */
+  resyncCurrentPage() {
+    if (!this.config.modules || this.config.modules.length === 0) return;
+    const saved = this.config.animationTime;
+    this.config.animationTime = 0;
+    try {
+      this.animatePageChange();
+    } finally {
+      this.config.animationTime = saved;
     }
   },
 

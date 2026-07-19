@@ -679,7 +679,15 @@
       {% if config.showHumidity === "temp" %}
         <span class="medium bright">{{ humidity() }}</span>
       {% endif %}
-      {% if config.showPrecipitationAmount and current.precipitationAmount is defined and current.precipitationAmount is not none %}
+      {% if config.showPrecipitationProbability and (current.psr or current.precipitationProbability is defined) %}
+        <div class="xsmall dimmed precip">
+          {% if current.psr %}
+            顯著降雨 {{ current.psr }}
+          {% else %}
+            {{ current.precipitationProbability }}%
+          {% endif %}
+        </div>
+      {% elif config.showPrecipitationAmount and current.precipitationAmount is defined and current.precipitationAmount is not none %}
         <div class="xsmall dimmed precip">{{ current.precipitationAmount | unit("precip", current.precipitationUnits) }}</div>
       {% endif %}
     </div>

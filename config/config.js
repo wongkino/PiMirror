@@ -80,7 +80,7 @@ let config = {
 			// Page 0 = main content; page 1 = blank (placeholder for later)
 			module: "MMM-pages",
 			config: {
-				animationTime: 400,
+				animationTime: 0,
 				timings: { default: 0 },
 				rotationHomePage: 0,
 				homePage: 0,
@@ -132,7 +132,8 @@ let config = {
 				showSun: false,
 				showFeelsLike: false,
 				roundTemp: true,
-				showPrecipitationAmount: true,
+				showPrecipitationAmount: false,
+				showPrecipitationProbability: true,
 				appendLocationNameToHeader: false
 			}
 		},
@@ -147,7 +148,8 @@ let config = {
 				header: "特別天氣提示",
 				maxTips: 2,
 				hideWhenEmpty: true,
-				updateInterval: 5 * 60 * 1000
+				// Official HKO frequency: 當有更新數據時 — poll every 1 min to catch updates
+				updateInterval: 60 * 1000
 			}
 		},
 		{
@@ -185,11 +187,14 @@ let config = {
 					stopName: "九巴",
 					lastUpdated: 1
 				},
-				reloadInterval: 60 * 1000,
-				updateInterval: 5 * 1000,
+				reloadInterval: 10 * 1000,
+				updateInterval: 0,
+				animationSpeed: 0,
 				tableClass: "xsmall",
 				showHeader: true,
-				hideWhenEmpty: true
+				showDestination: false,
+				hideWhenEmpty: true,
+				maximumEntries: 2
 			}
 		},
 		{
@@ -208,8 +213,10 @@ let config = {
 				displaySymbol: false,
 				coloredText: true,
 				timeFormat: "absolute",
-				dateFormat: "M/D",
-				fullDayEventDateFormat: "M/D",
+				dateFormat: "M[月]D[日]",
+				dateFormatWithYear: "YYYY[年]M[月]D[日]",
+				fullDayEventDateFormat: "M[月]D[日]",
+				fullDayEventDateFormatWithYear: "YYYY[年]M[月]D[日]",
 				hideTime: true,
 				calendars: [
 					{
@@ -236,8 +243,10 @@ let config = {
 				displaySymbol: false,
 				coloredText: true,
 				timeFormat: "absolute",
-				dateFormat: "M/D",
-				fullDayEventDateFormat: "M/D",
+				dateFormat: "M[月]D[日]",
+				dateFormatWithYear: "YYYY[年]M[月]D[日]",
+				fullDayEventDateFormat: "M[月]D[日]",
+				fullDayEventDateFormatWithYear: "YYYY[年]M[月]D[日]",
 				hideDuplicates: true,
 				hideTime: true,
 				calendars: [
@@ -273,11 +282,11 @@ let config = {
 		},
 		{
 			// https://github.com/gravitykillseverything/MMM-Sonarr
-			// Fill SONARR_* in config/config.env — shown on page 2
+			// Fill SONARR_* in config/config.env — shown on page 2 (top of strip)
 			module: "MMM-Sonarr",
 			classes: "page1",
 			header: "Sonarr",
-			position: "upper_third",
+			position: "top_bar",
 			config: {
 				apiKey: "${SONARR_API_KEY}",
 				baseUrl: "${SONARR_BASE_URL}",

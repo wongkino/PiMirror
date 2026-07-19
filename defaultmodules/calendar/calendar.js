@@ -26,8 +26,10 @@ Module.register("calendar", {
 		urgency: 7,
 		timeFormat: "relative",
 		dateFormat: "MMM Do",
+		dateFormatWithYear: null, // e.g. "YYYY[年]M[月]D[日]"; used when event year ≠ current year
 		dateEndFormat: "LT",
 		fullDayEventDateFormat: "MMM Do",
+		fullDayEventDateFormatWithYear: null,
 		showEnd: false,
 		showEndsOnlyWithDuration: false,
 		getRelative: 6,
@@ -266,7 +268,7 @@ Module.register("calendar", {
 		events.forEach((event, index) => {
 			const eventStartDateMoment = this.timestampToMoment(event.startDate);
 			const eventEndDateMoment = this.timestampToMoment(event.endDate);
-			const dateAsString = eventStartDateMoment.format(this.config.dateFormat);
+			const dateAsString = this.formatEventDate(eventStartDateMoment, false);
 			if (this.config.timeFormat === "dateheaders") {
 				if (lastSeenDate !== dateAsString) {
 					const dateRow = document.createElement("tr");
@@ -712,7 +714,7 @@ Module.register("calendar", {
 			const adjustedEndMoment = this.getAdjustedFullDayEndMoment(eventEndDateMoment);
 			if (this.config.showEnd && !this.config.showEndsOnlyWithDuration && !eventStartDateMoment.isSame(adjustedEndMoment, "d")) {
 				const timeWrapper = this.createDateHeadersTimeWrapper(event.url);
-				timeWrapper.innerHTML = `-${CalendarUtils.capFirst(adjustedEndMoment.format(this.config.fullDayEventDateFormat))}`;
+				timeWrapper.innerHTML = `-${CalendarUtils.capFirst(this.formatEventDate(adjustedEndMoment, true))}`;
 				eventWrapper.appendChild(timeWrapper);
 				if (!this.config.flipDateHeaderTitle) titleWrapper.classList.add("align-right");
 			} else {
@@ -736,7 +738,7 @@ Module.register("calendar", {
 	},
 
 	buildAbsoluteTimeText (event, eventStartDateMoment, eventEndDateMoment, now) {
-		let timeText = CalendarUtils.capFirst(eventStartDateMoment.format(this.config.dateFormat));
+		let timeText = CalendarUtils.capFirst(this.formatEventDate(eventStartDateMoment, false));
 
 		if (this.config.showEnd && (!this.config.showEndsOnlyWithDuration || this.hasEventDuration(event))) {
 			const sameDay = this.isSameDay(eventStartDateMoment, eventEndDateMoment);
@@ -748,12 +750,12 @@ Module.register("calendar", {
 
 		if (event.fullDayEvent) {
 			const adjustedEndMoment = this.getAdjustedFullDayEndMoment(eventEndDateMoment);
-			timeText = CalendarUtils.capFirst(eventStartDateMoment.format(this.config.fullDayEventDateFormat));
+			timeText = CalendarUtils.capFirst(this.formatEventDate(eventStartDateMoment, true));
 
 			if (this.config.showEnd && !this.config.showEndsOnlyWithDuration && !eventStartDateMoment.isSame(adjustedEndMoment, "d")) {
-				timeText += `-${CalendarUtils.capFirst(adjustedEndMoment.format(this.config.fullDayEventDateFormat))}`;
+				timeText += `-${CalendarUtils.capFirst(this.formatEventDate(adjustedEndMoment, true))}`;
 			} else if (!eventStartDateMoment.isSame(adjustedEndMoment, "d") && eventStartDateMoment.isBefore(now)) {
-				timeText = CalendarUtils.capFirst(now.format(this.config.fullDayEventDateFormat));
+				timeText = CalendarUtils.capFirst(this.formatEventDate(now, true));
 			}
 
 			if (this.config.nextDaysRelative) {
@@ -773,7 +775,7 @@ Module.register("calendar", {
 				}
 
 				if (relativeLabel && this.config.showEnd && !this.config.showEndsOnlyWithDuration && !eventStartDateMoment.isSame(adjustedEndMoment, "d")) {
-					timeText += `-${CalendarUtils.capFirst(adjustedEndMoment.format(this.config.fullDayEventDateFormat))}`;
+					timeText += `-${CalendarUtils.capFirst(this.formatEventDate(adjustedEndMoment, true))}`;
 				}
 			}
 
@@ -862,6 +864,27 @@ Module.register("calendar", {
 				timeUntilEnd: eventEndDateMoment.fromNow(true)
 			})
 		);
+	},
+
+	/**
+	 * Format an event date; omit year when it matches the current year and a with-year format is configured.
+	 * @param {moment.Moment} m Event moment
+	 * @param {boolean} fullDay Use full-day format keys
+	 * @returns {string} Formatted date
+	 */
+	formatEventDate (m, fullDay = false) {
+		const sameYear = m.isSame(moment(), "year");
+		let format;
+		if (fullDay) {
+			format = sameYear
+				? this.config.fullDayEventDateFormat
+				: (this.config.fullDayEventDateFormatWithYear || this.config.fullDayEventDateFormat);
+		} else {
+			format = sameYear
+				? this.config.dateFormat
+				: (this.config.dateFormatWithYear || this.config.dateFormat);
+		}
+		return m.format(format);
 	},
 
 	/**

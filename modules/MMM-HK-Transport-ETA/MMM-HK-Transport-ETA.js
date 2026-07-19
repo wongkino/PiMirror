@@ -18,7 +18,9 @@ Module.register("MMM-HK-Transport-ETA", {
 		tableClass: "small",
 		colored: false,
 		showHeader: false,
+		showDestination: true,
 		hideWhenEmpty: true,
+		maximumEntries: 0, // 0 = unlimited; per-route ETA rows to show
 	},
 
 	// Module properties.
@@ -188,9 +190,47 @@ Module.register("MMM-HK-Transport-ETA", {
 				error: this.error,
 			};
 		}
+		let currentETA = this.transportETAProvider.currentETA();
+		const limit = Number(this.config.maximumEntries) || 0;
+		if (limit > 0 && Array.isArray(currentETA)) {
+			currentETA = currentETA.map((f) => {
+				if (!Array.isArray(f?.etas)) return f;
+
+				// KMB groups times under destinations; limit soonest N times per route.
+				const allTimes = f.etas
+					.flatMap((e) =>
+						Array.isArray(e.time) ? e.time : e.time ? [e.time] : []
+					)
+					.filter(Boolean)
+					.sort();
+				const times = allTimes.slice(0, limit);
+
+				if (this.config.showDestination === false) {
+					return {
+						...f,
+						etas: times.length ? [{ dest: "", time: times }] : []
+					};
+				}
+
+				return {
+					...f,
+					etas: f.etas
+						.map((e) => {
+							const destTimes = (
+								Array.isArray(e.time) ? e.time : e.time ? [e.time] : []
+							)
+								.filter(Boolean)
+								.sort()
+								.slice(0, limit);
+							return { ...e, time: destTimes };
+						})
+						.filter((e) => e.time.length > 0)
+				};
+			});
+		}
 		return {
 			config: this.config,
-			currentETA: this.transportETAProvider.currentETA(),
+			currentETA,
 		};
 	},
 

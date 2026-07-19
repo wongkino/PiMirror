@@ -24,8 +24,12 @@
 	--gap-modules: 12px;
 }
 
-body {
-	overflow: hidden;
+/* Prevent page overlap after display wake (Wayland/labwc may restore opacity) */
+.module.hidden {
+	opacity: 0 !important;
+	visibility: hidden !important;
+	pointer-events: none !important;
+	position: fixed !important;
 }
 
 /* Single-column: never sit left/right side-by-side on this width */
@@ -254,12 +258,16 @@ body {
 	box-sizing: border-box;
 }
 
-/* MMM-Sonarr — fit 320px portrait strip */
+/* MMM-Sonarr — fit 320px portrait strip; page 2 sits in top_bar */
 .MMM-Sonarr,
 .module.MMM-Sonarr {
 	width: 100%;
 	max-width: 100%;
 	text-align: left;
+}
+
+.region.top.bar .module.MMM-Sonarr {
+	margin-top: 0;
 }
 
 .MMM-Sonarr .sonarr-wrapper {
