@@ -1,0 +1,18 @@
+# Emby media players（範本，不含密鑰）
+# Docs: https://www.home-assistant.io/integrations/emby
+#
+# 安裝到 Home Assistant:
+# 1. 複製為 /config/packages/emby.yaml
+# 2. 在 /config/secrets.yaml 加入:
+#      emby_api_key: "YOUR_EMBY_API_KEY"
+# 3. configuration.yaml 需有:
+#      homeassistant:
+#        packages: !include_dir_named packages
+# 4. 重啟 Home Assistant
+
+media_player:
+  - platform: emby
+    host: emby.wongkino.com
+    api_key: !secret emby_api_key
+    ssl: true
+    port: 443
