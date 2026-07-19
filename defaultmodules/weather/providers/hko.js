@@ -79,6 +79,7 @@ class HKOProvider {
 		this.fetcher = null;
 		this.onDataCallback = null;
 		this.onErrorCallback = null;
+		this._psrCache = null; // { expires, psr, precipitationProbability }
 	}
 
 	initialize () {
@@ -175,10 +176,20 @@ class HKOProvider {
 	/**
 	 * Attach today's HKO PSR (probability of significant rain) from the 9-day forecast.
 	 * Current weather (rhrread) only has past rainfall totals, not PSR.
+	 * Cached briefly so we do not hit fnd on every rhrread refresh.
 	 * @param {object} weather Current weather object
 	 * @returns {Promise<object>}
 	 */
 	async #enrichCurrentWithPsr (weather) {
+		const cached = this._psrCache;
+		if (cached && cached.expires > Date.now()) {
+			if (cached.psr) weather.psr = cached.psr;
+			if (cached.precipitationProbability !== null) {
+				weather.precipitationProbability = cached.precipitationProbability;
+			}
+			return weather;
+		}
+
 		try {
 			const params = new URLSearchParams({
 				dataType: "fnd",
@@ -192,13 +203,31 @@ class HKOProvider {
 
 			const fnd = await response.json();
 			const day = this.#todayForecastDay(fnd);
-			if (!day?.PSR) return weather;
+			if (!day?.PSR) {
+				this._psrCache = {
+					expires: Date.now() + Math.min(this.config.updateInterval || 600000, 15 * 60 * 1000),
+					psr: null,
+					precipitationProbability: null
+				};
+				return weather;
+			}
 
-			weather.psr = `${day.PSR}`.trim();
+			const psr = `${day.PSR}`.trim();
 			const pop = this.#psrToProbability(day.PSR);
+			weather.psr = psr;
 			if (pop !== null) {
 				weather.precipitationProbability = pop;
 			}
+			// PSR changes infrequently; cache for one weather refresh cycle (min 10m, max 30m).
+			const ttl = Math.min(
+				Math.max(Number(this.config.updateInterval) || 10 * 60 * 1000, 10 * 60 * 1000),
+				30 * 60 * 1000
+			);
+			this._psrCache = {
+				expires: Date.now() + ttl,
+				psr,
+				precipitationProbability: pop
+			};
 		} catch (error) {
 			Log.warn(`[hko] Failed to fetch PSR for current weather: ${error.message}`);
 		}

@@ -65,6 +65,20 @@ class KMBProvider extends HKTransportETAProvider {
 
 		const results = await Promise.allSettled(allStopETAPromises);
 
+		const anySuccess = results.some(
+			(result) =>
+				result.status === "fulfilled" && result.value?.success === true,
+		);
+		if (!anySuccess) {
+			const previous = this.currentETA();
+			if (Array.isArray(previous) && previous.length > 0) {
+				Log.warn(
+					"KMB ETA Provider: All stop ETA requests failed; keeping previous data",
+				);
+				return previous;
+			}
+		}
+
 		const aggregatedResults = new Map();
 
 		results.forEach((result) => {
@@ -442,14 +456,12 @@ class KMBProvider extends HKTransportETAProvider {
 	 * Handle errors gracefully
 	 */
 	handleError(error) {
-		// Set empty ETA array on error to prevent showing stale data
-		this.setCurrentETA([]);
-		this._cleanup();
-
-		// Could implement additional error handling here:
-		// - Exponential backoff for subsequent requests
-		// - Fallback to cached data if recent enough
-		// - User notifications for persistent errors
+		// Keep last successful ETA on transient API failures so the module
+		// does not flash empty / disappear between reloads.
+		Log.warn(
+			"KMB ETA Provider: Keeping previous ETA after fetch error",
+			error?.message || error,
+		);
 	}
 
 	/**

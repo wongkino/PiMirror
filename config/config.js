@@ -44,6 +44,8 @@ let config = {
 			// https://github.com/Jopyth/MMM-Remote-Control
 			module: "MMM-Remote-Control",
 			config: {
+				apiKey: process.env.MM_REMOTE_API_KEY || "",
+				secureEndpoints: true,
 				customCommand: {
 					// wlopm alone sometimes leaves Waveshare black; re-assert mode on wake
 					monitorOnCommand:
@@ -66,7 +68,7 @@ let config = {
 				accentColor: false,
 				pageControl: {
 					name: "MagicMirror Pages",
-					pages: ["主頁", "Sonarr"]
+					pages: ["主頁", "睡房", "Sonarr"]
 				},
 				playerFocus: {
 					name: "Player Focus"
@@ -77,16 +79,17 @@ let config = {
 		},
 		{
 			// https://github.com/edward-shen/MMM-pages
-			// Page 0 = main content; page 1 = blank (placeholder for later)
+			// Page 0 = main; page 1 = Home Assistant; page 2 = Sonarr
 			module: "MMM-pages",
 			config: {
-				animationTime: 0,
+				animationTime: 400,
 				timings: { default: 0 },
 				rotationHomePage: 0,
 				homePage: 0,
 				modules: [
 					["page0"],
-					["page1"]
+					["page1"],
+					["page2"]
 				],
 				fixed: [
 					"MMM-PageSwipe",
@@ -104,7 +107,7 @@ let config = {
 				minDistance: 70,
 				maxTime: 900,
 				ignoreSelector:
-					"button, a, input, .indicator, .circle-wrapper, .mmm-unifiprotect-native-live, video, iframe, .mmm-playerfocus-btn, .MMM-PlayerFocus"
+					"button, a, input, .indicator, .circle-wrapper, .mmm-unifiprotect-native-live, video, iframe, .mmm-playerfocus-btn, .mmm-playerfocus-brightness, .mmm-playerfocus-brightness-slider, .MMM-PlayerFocus, .ha-entity, .ha-touch-root, .ha-media-btn, .ha-climate-btn, .ha-brightness-slider"
 			}
 		},
 		{
@@ -184,7 +187,7 @@ let config = {
 				routes: ["268X", "276P"],
 				dirs: ["O"],
 				stopInfo: {
-					stopName: "九巴",
+					stopName: "到站提示",
 					lastUpdated: 1
 				},
 				reloadInterval: 10 * 1000,
@@ -193,7 +196,7 @@ let config = {
 				tableClass: "xsmall",
 				showHeader: true,
 				showDestination: false,
-				hideWhenEmpty: true,
+				hideWhenEmpty: false,
 				maximumEntries: 2
 			}
 		},
@@ -260,31 +263,57 @@ let config = {
 			}
 		},
 		{
-			// https://github.com/johnster000/MMM-NowPlaying
-			// Shows Nest / Chromecast now-playing via local Cast (no API keys)
-			module: "MMM-NowPlaying",
-			classes: "page0",
+			// https://github.com/mathewmeconry/MMM-HomeAssistant-Touch
+			// Media players on main page (replaces MMM-NowPlaying)
+			module: "MMM-HomeAssistant-Touch",
+			classes: "page0 ha-media",
+			header: "播放器",
 			position: "upper_third",
 			config: {
-				maxWidth: "300px",
-				showAlbum: true,
-				pollInterval: 5000,
-				updateFadeSpeed: 400,
-				adminPort: 8083
+				host: `http://${process.env.HA_HOST || "10.0.0.2"}`,
+				port: Number(process.env.HA_PORT || 8123),
+				token: process.env.HA_TOKEN || "",
+				ignoreCert: true,
+				entities: [
+					"media_player.wo_shi_homepod_mini",
+					"media_player.shui_fang_shui_fang_de_apple_tv",
+					"media_player.av_samsung_soundbar_q990b"
+				]
 			}
 		},
 		{
-			// Sit directly under NowPlaying; HomeKit + touch toggle
+			// Overlay button on HA「播放器」; HomeKit can toggle too
 			module: "MMM-PlayerFocus",
 			classes: "page0",
 			position: "upper_third",
 			config: {}
 		},
 		{
+			// https://github.com/mathewmeconry/MMM-HomeAssistant-Touch
+			// Touch controls: lights (brightness), switches, climate
+			module: "MMM-HomeAssistant-Touch",
+			classes: "page1",
+			header: "睡房",
+			position: "top_bar",
+			config: {
+				host: `http://${process.env.HA_HOST || "10.0.0.2"}`,
+				port: Number(process.env.HA_PORT || 8123),
+				token: process.env.HA_TOKEN || "",
+				ignoreCert: true,
+				entities: [
+					"climate.wo_shi_leng_qi",
+					"light.wo_shi_shui_fang_deng",
+					"light.aqara_wall_switch_d1",
+					"switch.wo_shi_feng_shan",
+					"switch.wo_shi_04018130496"
+				]
+			}
+		},
+		{
 			// https://github.com/gravitykillseverything/MMM-Sonarr
 			// Fill SONARR_* in config/config.env — shown on page 2 (top of strip)
 			module: "MMM-Sonarr",
-			classes: "page1",
+			classes: "page2",
 			header: "Sonarr",
 			position: "top_bar",
 			config: {
@@ -319,7 +348,7 @@ let config = {
 				showSmartEvents: false,
 				useMagicMirrorAlerts: false,
 				doorbellOverlay: false,
-				debugLogging: true
+				debugLogging: false
 			}
 		},
 		{

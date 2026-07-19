@@ -30,7 +30,14 @@ const FIELD_META = [
 		group: "UniFi Protect"
 	},
 	{ key: "SONARR_BASE_URL", label: "Sonarr 網址", type: "text", group: "Sonarr" },
-	{ key: "SONARR_API_KEY", label: "Sonarr API Key", type: "password", group: "Sonarr" }
+	{ key: "SONARR_API_KEY", label: "Sonarr API Key", type: "password", group: "Sonarr" },
+	{ key: "HA_URL", label: "HA 網址", type: "text", group: "Home Assistant" },
+	{ key: "HA_HOST", label: "HA 主機", type: "text", group: "Home Assistant" },
+	{ key: "HA_PORT", label: "HA 連接埠", type: "text", group: "Home Assistant" },
+	{ key: "HA_TOKEN", label: "HA 長期存取權杖", type: "password", group: "Home Assistant" },
+	{ key: "MAGICMIRROR_HOST", label: "MagicMirror 主機（給 HA 連）", type: "text", group: "Home Assistant" },
+	{ key: "MAGICMIRROR_PORT", label: "MagicMirror 連接埠", type: "text", group: "Home Assistant" },
+	{ key: "MM_REMOTE_API_KEY", label: "Remote Control API Key", type: "password", group: "Home Assistant" }
 ];
 
 const ADMIN_SECRET_KEYS = ["ADMIN_PASSWORD", "ADMIN_PASSWORD_HASH"];

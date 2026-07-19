@@ -79,6 +79,8 @@ Temporary Items
 !/modules/MMM-PageSwipe/**
 !/modules/MMM-PlayerFocus/
 !/modules/MMM-PlayerFocus/**
+!/modules/MMM-HomeAssistant-Touch/
+!/modules/MMM-HomeAssistant-Touch/**
 !/modules/MMM-Remote-Control/
 !/modules/MMM-Remote-Control/**
 !/modules/MMM-Sonarr/
@@ -96,6 +98,9 @@ config/*
 !config/custom.css
 !config/custom.css.sample
 !config/config.env.sample
+!config/homeassistant/
+!config/homeassistant/**
+config/homeassistant/magicmirror_screen.yaml
 
 # Local secrets / generated (redundant with config/* but explicit)
 config/config.env

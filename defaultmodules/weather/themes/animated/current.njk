@@ -682,7 +682,7 @@
       {% if config.showPrecipitationProbability and (current.psr or current.precipitationProbability is defined) %}
         <div class="xsmall dimmed precip">
           {% if current.psr %}
-            顯著降雨 {{ current.psr }}
+            降雨機率 {{ current.psr }}
           {% else %}
             {{ current.precipitationProbability }}%
           {% endif %}

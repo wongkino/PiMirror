@@ -274,7 +274,8 @@ Module.register("MMM-HK-Transport-ETA", {
 		const nextLoad =
 			delay !== null && delay >= 0 ? delay : this.config.reloadInterval;
 
-		setTimeout(() => {
+		if (this.reloadTimer) clearTimeout(this.reloadTimer);
+		this.reloadTimer = setTimeout(() => {
 			this.transportETAProvider.fetchETA();
 		}, nextLoad);
 	},

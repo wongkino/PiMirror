@@ -1,0 +1,106 @@
+#MMM-HomeAssistant-Touch {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+#MMM-HomeAssistant-Touch .ha-entity {
+  border: 0.1rem solid grey;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  margin: 0.5rem;
+  height: 7rem;
+  width: 7rem;
+  font-size: 18px;
+}
+
+#MMM-HomeAssistant-Touch .ha-entity .title,
+#MMM-HomeAssistant-Touch .ha-entity .status {
+  display: block;
+}
+
+#MMM-HomeAssistant-Touch .ha-entity.ha-switch.on,
+#MMM-HomeAssistant-Touch .ha-entity.ha-light.on {
+  background-color: #2af20261;
+}
+
+#MMM-HomeAssistant-Touch .ha-entity.ha-cover {
+    padding: 0;
+    padding-left: .5rem;
+    height: 8rem;
+    width: 7.5rem;
+    display: flex;
+}
+#MMM-HomeAssistant-Touch .ha-entity.ha-cover .title{
+    flex-grow: 1;
+}
+#MMM-HomeAssistant-Touch .ha-entity.ha-cover .status {
+    width: .5rem;
+    background-color: #2af20261;
+    border-bottom-right-radius: 0.4rem;
+    align-self: flex-end;
+    z-index: -1;
+}
+#MMM-HomeAssistant-Touch .ha-entity.ha-cover .status.full {
+    border-top-right-radius: 0.4rem;
+}
+
+.ha-slider {
+  width: 3rem;
+  height: 200px;
+  border: 0.1rem solid grey;
+  position: absolute;
+}
+
+.ha-slider .ha-slider-fill {
+  background-color: #2af20261;
+  width: 3rem;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  text-align: center;
+}
+
+.ha-media_player {
+  background-size: cover;
+}
+
+.ha-media_player .title {
+  mix-blend-mode: difference;
+  height: 6rem;
+}
+
+.ha-media_player .media_player_control {
+  width: 8.2rem;
+  height: 1.6rem;
+  margin-left: -10px;
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+  display: flex;
+}
+
+.ha-media_player .media_player_control div {
+  display: block;
+  flex-grow: 1;
+  border: 1px solid grey;
+  display: inline;
+}
+
+.ha-media_player .media_player_control div i.fas {
+  display: block;
+  margin-top: 3px;
+  mix-blend-mode: color-dodge;
+}
+
+.ha-media_player .media_player_control div:nth-child(1) {
+  border-bottom-left-radius: 0.5rem;
+}
+
+.ha-media_player .media_player_control div:nth-child(2n) {
+  border-right: 0;
+  border-left: 0;
+}
+
+.ha-media_player .media_player_control div:nth-last-child(1) {
+  border-bottom-right-radius: 0.5rem;
+}

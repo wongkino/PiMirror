@@ -1,0 +1,58 @@
+# MagicMirror 螢幕開關（範本，不含密鑰）
+#
+# 安裝到 Home Assistant:
+# 1. 複製為 /config/packages/magicmirror_screen.yaml
+# 2. 在 /config/secrets.yaml 加入下方鍵值
+# 3. configuration.yaml:
+#      homeassistant:
+#        packages: !include_dir_named packages
+# 4. 檢查設定後重啟 HA
+#
+# secrets.yaml 範例:
+#   mm_monitor_on_url: "http://10.0.1.125:8080/api/monitor/on"
+#   mm_monitor_off_url: "http://10.0.1.125:8080/api/monitor/off"
+#   mm_monitor_status_url: "http://10.0.1.125:8080/api/monitor/status"
+#   mm_remote_api_key: "YOUR_MM_REMOTE_API_KEY"
+
+rest_command:
+  magicmirror_screen_on:
+    url: !secret mm_monitor_on_url
+    method: GET
+    headers:
+      Authorization: !secret mm_remote_api_key_header
+  magicmirror_screen_off:
+    url: !secret mm_monitor_off_url
+    method: GET
+    headers:
+      Authorization: !secret mm_remote_api_key_header
+
+rest:
+  - resource: !secret mm_monitor_status_url
+    method: GET
+    headers:
+      Authorization: !secret mm_remote_api_key_header
+    scan_interval: 30
+    sensor:
+      - name: "MagicMirror Screen Status"
+        unique_id: magicmirror_screen_status
+        value_template: "{{ value_json.monitor }}"
+
+template:
+  - switch:
+      - name: "MagicMirror 螢幕"
+        unique_id: magicmirror_screen_switch
+        default_entity_id: switch.magicmirror_screen
+        icon: mdi:mirror-rectangle
+        state: "{{ states('sensor.magicmirror_screen_status') == 'on' }}"
+        turn_on:
+          - action: rest_command.magicmirror_screen_on
+          - delay: "00:00:01"
+          - action: homeassistant.update_entity
+            target:
+              entity_id: sensor.magicmirror_screen_status
+        turn_off:
+          - action: rest_command.magicmirror_screen_off
+          - delay: "00:00:01"
+          - action: homeassistant.update_entity
+            target:
+              entity_id: sensor.magicmirror_screen_status

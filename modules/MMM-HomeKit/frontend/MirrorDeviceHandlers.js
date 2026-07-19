@@ -413,6 +413,7 @@ class HKPageControlHandler {
     // HomeKit → MagicMirror
     devicesEventStream.on("PAGE_CONTROL", (payload) => {
       if (payload && payload.type === "set" && typeof payload.page === "number") {
+        if (payload.page === this.currentPage) return;
         this.currentPage = payload.page;
         sendNotification("PAGE_SELECT", payload.page);
       }

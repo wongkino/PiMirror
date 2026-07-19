@@ -78,6 +78,8 @@ Module.register('MMM-pages', {
     this.hiddenPageTimer = null;
     this.permanentlyHiddenModules = new Set();
     this._resyncTimer = null;
+    this._pageShowTimer = null;
+    this._pageChangePending = false;
 
     // Re-apply page visibility after display wake / compositor resume
     // (opacity on .hidden modules can be restored incorrectly on Wayland).
@@ -88,7 +90,7 @@ Module.register('MMM-pages', {
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) scheduleResync();
     });
-    window.addEventListener('focus', scheduleResync);
+    // Avoid window focus: touch/HomeKit interaction would resync too often.
     window.addEventListener('pageshow', scheduleResync);
   },
 
@@ -117,8 +119,20 @@ Module.register('MMM-pages', {
         // falls through
       case 'PAGE_SELECT':
         Log.log(`[MMM-pages] received a notification to change to page ${payload} of type ${typeof payload}.`);
-        this.curPage = payload;
-        this.updatePages();
+        {
+          const nextPage = Number(payload);
+          if (!Number.isFinite(nextPage)) {
+            Log.warn(`[MMM-pages] Ignoring invalid PAGE_SELECT payload: ${payload}`);
+            break;
+          }
+          // Ignore no-op selects (HomeKit can re-emit the active page).
+          if (nextPage === this.curPage && !this._pageChangePending) {
+            Log.debug(`[MMM-pages] Already on page ${nextPage}, skipping`);
+            break;
+          }
+          this.curPage = nextPage;
+          this.updatePages();
+        }
         break;
       case 'PAGE_INCREMENT':
         Log.log('[MMM-pages] received a notification to increment pages!');
@@ -268,12 +282,21 @@ Module.register('MMM-pages', {
     }
     const animationTime = this.config.animationTime / 2;
 
+    // Cancel any in-flight delayed show from a previous page change.
+    // HomeKit page buttons can fire overlapping PAGE_SELECT while fade is running.
+    if (this._pageShowTimer) {
+      clearTimeout(this._pageShowTimer);
+      this._pageShowTimer = null;
+    }
+    this._pageChangePending = true;
+
+    // Instantly hide modules that should not be visible. Animated hide was the
+    // main cause of page0+page1 overlap when a new select arrived mid-fade.
     MM.getModules()
       .exceptWithClass(modulesToShow)
-      .enumerate(module => module.hide(animationTime, () => {}, lockStringObj));
+      .enumerate(module => module.hide(0, () => {}, lockStringObj));
 
-    // Shows all modules meant to be on the current page, after a small delay.
-    setTimeout(() => {
+    const showModules = () => {
       MM.getModules()
         .withClass(modulesToShow)
         .enumerate((module) => {
@@ -282,7 +305,16 @@ Module.register('MMM-pages', {
             module.show(animationTime, () => {}, lockStringObj);
           }
         });
-    }, animationTime);
+      this._pageChangePending = false;
+      this._pageShowTimer = null;
+    };
+
+    if (animationTime > 0) {
+      // Brief delay so hide settles, then fade in the target page.
+      this._pageShowTimer = setTimeout(showModules, 40);
+    } else {
+      showModules();
+    }
   },
 
   /**

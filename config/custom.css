@@ -110,11 +110,14 @@
 	overflow: hidden;
 }
 
+/* All module titles: bright emphasized style */
 .module header {
 	font-size: var(--font-size-small);
 	line-height: 1.25;
 	margin-bottom: 6px;
 	padding-bottom: 3px;
+	color: var(--color-text-bright);
+	border-bottom-color: var(--color-text-bright);
 }
 
 /* Clock: fit narrow top bar */
@@ -150,8 +153,519 @@
 }
 
 .MMM-HK-Transport-ETA table {
-	font-size: var(--font-size-xsmall);
+	font-size: var(--font-size-small);
 }
+
+/* Home Assistant sensors — compact on 320px */
+.module.MMM-homeassistant-sensors {
+	text-align: left;
+	width: 100%;
+}
+
+.module.MMM-homeassistant-sensors ticker > header:empty {
+	display: none;
+}
+
+.ha-small {
+	font-size: var(--font-size-small);
+	line-height: 1.35;
+	font-weight: 400;
+	color: var(--color-text);
+}
+
+/* Home Assistant Touch — fit 320px portrait */
+.module.MMM-HomeAssistant-Touch {
+	text-align: center;
+	width: 100%;
+}
+
+.ha-touch-root {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 2px 0 8px;
+}
+
+.ha-touch-root .ha-entity.ha-btn {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-between;
+	height: auto;
+	min-height: 7.2rem;
+	width: 100%;
+	margin: 0;
+	padding: 14px 10px 12px;
+	box-sizing: border-box;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 14px;
+	background: linear-gradient(165deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+	color: var(--color-text-bright);
+	font-size: var(--font-size-small);
+	touch-action: manipulation;
+	cursor: pointer;
+	user-select: none;
+	-webkit-tap-highlight-color: transparent;
+	transition: background 0.2s ease, border-color 0.2s ease, transform 0.12s ease;
+}
+
+.ha-touch-root .ha-entity.ha-btn:active {
+	transform: scale(0.96);
+}
+
+.ha-touch-root .ha-entity.ha-btn .ha-icon {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 2.4rem;
+	height: 2.4rem;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.06);
+	margin-bottom: 8px;
+}
+
+.ha-touch-root .ha-entity.ha-btn .ha-icon i {
+	font-size: 1.15rem;
+	color: rgba(255, 255, 255, 0.55);
+	line-height: 1;
+}
+
+.ha-touch-root .ha-entity.ha-btn .title {
+	display: block;
+	width: 100%;
+	font-size: 0.92em;
+	font-weight: 500;
+	line-height: 1.25;
+	letter-spacing: 0.02em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: var(--color-text-bright);
+}
+
+.ha-touch-root .ha-entity.ha-btn .status {
+	display: block;
+	margin-top: 8px;
+	padding: 2px 10px;
+	border-radius: 999px;
+	font-size: 0.75em;
+	letter-spacing: 0.06em;
+	color: rgba(255, 255, 255, 0.45);
+	background: rgba(255, 255, 255, 0.06);
+}
+
+/* ON state — accent emphasis */
+.ha-touch-root .ha-entity.ha-btn.on {
+	border-color: rgba(88, 166, 255, 0.7);
+	background: linear-gradient(165deg, rgba(88, 166, 255, 0.32) 0%, rgba(88, 166, 255, 0.08) 100%);
+}
+
+.ha-touch-root .ha-entity.ha-btn.on .ha-icon {
+	background: rgba(88, 166, 255, 0.25);
+}
+
+.ha-touch-root .ha-entity.ha-btn.on .ha-icon i {
+	color: #7ec0ff;
+}
+
+.ha-touch-root .ha-entity.ha-btn.on .status {
+	color: #9fd0ff;
+	background: rgba(88, 166, 255, 0.22);
+}
+
+.ha-touch-root .ha-entity.ha-btn.off .ha-icon i {
+	color: rgba(255, 255, 255, 0.35);
+}
+
+.ha-touch-root .ha-entity.ha-scene {
+	border-color: rgba(88, 166, 255, 0.35);
+	background: linear-gradient(
+		165deg,
+		rgba(88, 166, 255, 0.16) 0%,
+		rgba(255, 255, 255, 0.04) 100%
+	);
+}
+
+.ha-touch-root .ha-entity.ha-scene .ha-icon {
+	background: rgba(88, 166, 255, 0.22);
+}
+
+.ha-touch-root .ha-entity.ha-scene .ha-icon i {
+	color: #9ecbff;
+}
+
+.ha-touch-root .ha-entity.ha-scene .status {
+	color: rgba(158, 203, 255, 0.95);
+}
+
+/* Dimmable light — brightness slider */
+.ha-touch-root .ha-light-dimmable {
+	align-items: stretch;
+	justify-content: flex-start;
+	gap: 10px;
+	min-height: 8.2rem;
+}
+
+.ha-touch-root .ha-light-top {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+}
+
+.ha-touch-root .ha-light-dimmable .ha-icon {
+	margin-bottom: 0;
+	flex: 0 0 auto;
+}
+
+.ha-touch-root .ha-light-meta {
+	flex: 1 1 auto;
+	min-width: 0;
+	text-align: left;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.ha-touch-root .ha-light-dimmable .title {
+	text-align: left;
+}
+
+.ha-touch-root .ha-light-dimmable .status {
+	align-self: flex-start;
+	margin-top: 0;
+}
+
+.ha-touch-root .ha-brightness-row {
+	width: 100%;
+	padding: 0 2px;
+}
+
+.ha-touch-root .ha-brightness-slider {
+	width: 100%;
+	height: 28px;
+	margin: 0;
+	accent-color: #58a6ff;
+	touch-action: none;
+}
+
+/* Climate control — full width card */
+.ha-touch-root .ha-climate-card {
+	grid-column: 1 / -1;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	width: 100%;
+	margin: 0;
+	padding: 14px 12px;
+	box-sizing: border-box;
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 14px;
+	background: linear-gradient(165deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
+	color: var(--color-text-bright);
+	text-align: left;
+}
+
+.ha-touch-root .ha-climate-card.on {
+	border-color: rgba(88, 166, 255, 0.7);
+	background: linear-gradient(165deg, rgba(88, 166, 255, 0.28) 0%, rgba(88, 166, 255, 0.06) 100%);
+}
+
+.ha-touch-root .ha-climate-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 8px;
+}
+
+.ha-touch-root .ha-climate-title {
+	font-size: 1em;
+	font-weight: 600;
+}
+
+.ha-touch-root .ha-climate-mode {
+	font-size: 0.75em;
+	padding: 2px 10px;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.08);
+	color: rgba(255, 255, 255, 0.7);
+}
+
+.ha-touch-root .ha-climate-card.on .ha-climate-mode {
+	background: rgba(88, 166, 255, 0.25);
+	color: #9fd0ff;
+}
+
+.ha-touch-root .ha-climate-temps {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 8px;
+}
+
+.ha-touch-root .ha-climate-current,
+.ha-touch-root .ha-climate-target {
+	padding: 10px;
+	border-radius: 10px;
+	background: rgba(0, 0, 0, 0.25);
+	text-align: center;
+}
+
+.ha-touch-root .ha-climate-temps .num {
+	display: block;
+	font-size: 1.6em;
+	font-weight: 700;
+	line-height: 1.1;
+	color: #fff;
+}
+
+.ha-touch-root .ha-climate-temps .unit {
+	display: block;
+	margin-top: 4px;
+	font-size: 0.7em;
+	color: rgba(255, 255, 255, 0.5);
+}
+
+.ha-touch-root .ha-climate-controls {
+	display: grid;
+	grid-template-columns: 1fr 1.4fr 1fr;
+	gap: 8px;
+}
+
+.ha-touch-root .ha-climate-btn {
+	appearance: none;
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	background: rgba(255, 255, 255, 0.08);
+	color: #fff;
+	border-radius: 12px;
+	min-height: 44px;
+	font-size: 1.1em;
+	touch-action: manipulation;
+	cursor: pointer;
+}
+
+.ha-touch-root .ha-climate-btn:active {
+	transform: scale(0.96);
+	background: rgba(88, 166, 255, 0.35);
+}
+
+.ha-touch-root .ha-climate-power {
+	font-size: 0.95em;
+	font-weight: 600;
+}
+
+
+/* HA media player — NowPlaying-style big card */
+.module.ha-media .ha-touch-root {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	width: 100%;
+}
+
+/* 沒有播放／暫停中的裝置時，整塊播放器（含標題）隱藏 */
+.module.ha-media:not(:has(.ha-media-card:not(.ha-media-hidden))) {
+	display: none !important;
+}
+
+.module.ha-media .ha-media-card {
+	position: relative;
+	overflow: hidden;
+	width: 100%;
+	min-height: 220px;
+	height: auto;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 12px;
+	background: rgba(255, 255, 255, 0.04);
+}
+
+.module.ha-media .ha-media-card.ha-media-hidden {
+	display: none;
+}
+
+.module.ha-media .ha-media-card.paused {
+	opacity: 0.8;
+}
+
+.module.ha-media .ha-media-art-wrap {
+	position: absolute;
+	inset: 0;
+	background: rgba(255, 255, 255, 0.04);
+}
+
+.module.ha-media .ha-media-art-img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+	opacity: 0.78;
+}
+
+.module.ha-media .ha-media-art-placeholder {
+	width: 100%;
+	height: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 3.5em;
+	color: rgba(255, 255, 255, 0.12);
+}
+
+.module.ha-media .ha-media-art-overlay {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		to bottom,
+		rgba(0, 0, 0, 0.1) 0%,
+		rgba(0, 0, 0, 0.55) 50%,
+		rgba(0, 0, 0, 0.9) 100%
+	);
+}
+
+.module.ha-media .ha-media-card-body {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	align-items: center;
+	min-height: 220px;
+	padding: 16px 14px 14px;
+	gap: 4px;
+	text-align: center;
+}
+
+.module.ha-media .ha-media-device-label {
+	font-size: 0.63em;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.1em;
+	color: rgba(255, 255, 255, 0.38);
+	margin-bottom: 4px;
+	width: 100%;
+}
+
+.module.ha-media .ha-media-title {
+	font-size: 1.12em;
+	font-weight: 700;
+	color: #fff;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 100%;
+}
+
+.module.ha-media .ha-media-sub {
+	font-size: 0.85em;
+	color: rgba(255, 255, 255, 0.65);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 100%;
+	margin-bottom: 4px;
+}
+
+.module.ha-media .ha-media-progress {
+	width: 100%;
+	margin: 2px 0 8px;
+}
+
+.module.ha-media .ha-media-progress.ha-media-hidden {
+	display: none;
+}
+
+.module.ha-media .ha-media-progress-track {
+	position: relative;
+	width: 100%;
+	height: 4px;
+	border-radius: 2px;
+	background: rgba(255, 255, 255, 0.22);
+	overflow: hidden;
+}
+
+.module.ha-media .ha-media-progress-fill {
+	height: 100%;
+	width: 0%;
+	border-radius: 2px;
+	background: rgba(255, 255, 255, 0.9);
+	transition: width 0.35s linear;
+}
+
+.module.ha-media .ha-media-progress-times {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 4px;
+	font-size: 0.62em;
+	line-height: 1;
+	color: rgba(255, 255, 255, 0.55);
+	font-variant-numeric: tabular-nums;
+}
+
+.module.ha-media .ha-media-controls {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: auto;
+	height: auto;
+	margin: 0;
+	gap: 10px;
+	border-radius: 0;
+	background: transparent;
+}
+
+.module.ha-media .ha-media-btn {
+	appearance: none;
+	border: none;
+	background: rgba(255, 255, 255, 0.1);
+	color: #fff;
+	width: 2.4rem;
+	height: 2.4rem;
+	border-radius: 50%;
+	padding: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	touch-action: manipulation;
+	cursor: pointer;
+}
+
+.module.ha-media .ha-media-btn-primary {
+	width: 3rem;
+	height: 3rem;
+	background: rgba(255, 255, 255, 0.22);
+}
+
+.module.ha-media .ha-media-btn:active {
+	transform: scale(0.92);
+	background: rgba(88, 166, 255, 0.45);
+}
+
+.module.ha-media .ha-media-btn i {
+	font-size: 0.85rem;
+	pointer-events: none;
+}
+
+.module.ha-media .ha-media-btn-primary i {
+	font-size: 1rem;
+}
+
+/* Keep bedroom switch grid using .ha-touch-root too */
+.module.MMM-HomeAssistant-Touch:not(.ha-media) .ha-touch-root {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px;
+	width: 100%;
+	box-sizing: border-box;
+	padding: 2px 0 8px;
+}
+
+
+
 
 .weather .wi {
 	font-size: 1.15em;
@@ -336,8 +850,8 @@
 	border-radius: 0;
 }
 
-/* Player focus: black out everything except NowPlaying (button is inside it) */
-body.player-focus .module:not(.MMM-NowPlaying) {
+/* Player focus（點「全覽」）：只顯示播放器，橫向滿版覆蓋 */
+body.player-focus .module:not(.ha-media) {
 	display: none !important;
 }
 
@@ -356,22 +870,90 @@ body.player-focus .region.upper.third {
 	transform: none !important;
 	display: flex !important;
 	flex-direction: column;
-	align-items: center;
+	align-items: stretch;
 	justify-content: center;
 	z-index: 9000;
 	pointer-events: none;
+	background: #000;
+	padding: 0 !important;
+	margin: 0 !important;
 }
 
-body.player-focus .module.MMM-NowPlaying {
+body.player-focus .module.ha-media {
 	position: relative !important;
-	left: auto !important;
+	left: 0 !important;
+	right: 0 !important;
 	top: auto !important;
 	transform: none !important;
 	opacity: 1 !important;
 	visibility: visible !important;
 	pointer-events: auto !important;
 	margin: 0 !important;
-	width: calc(100% - 24px) !important;
-	max-width: 320px;
+	padding: 0 !important;
+	width: 100% !important;
+	max-width: none !important;
 	display: block !important;
+	filter: brightness(var(--player-focus-brightness, 1));
+	z-index: 9100;
+}
+
+body.player-focus .module.ha-media > header,
+body.player-focus .module.ha-media .module-header {
+	display: none !important;
+}
+
+body.player-focus .module.ha-media .module-content {
+	margin: 0 !important;
+	padding: 0 !important;
+	width: 100% !important;
+}
+
+body.player-focus .module.ha-media .ha-touch-root {
+	width: 100%;
+	gap: 0;
+	padding: 0;
+}
+
+/* 全覽：封面橫向鋪滿在上，曲名／進度／控制鍵在封面下方 */
+body.player-focus .module.ha-media .ha-media-card {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	min-height: 0;
+	height: auto;
+	border-radius: 0;
+	border: none;
+	overflow: visible;
+	background: #000;
+}
+
+body.player-focus .module.ha-media .ha-media-card.ha-media-hidden {
+	display: none !important;
+}
+
+body.player-focus .module.ha-media .ha-media-art-wrap {
+	position: relative;
+	inset: auto;
+	width: 100%;
+	height: 200px;
+	flex-shrink: 0;
+}
+
+body.player-focus .module.ha-media .ha-media-art-img {
+	opacity: 1;
+	object-fit: cover;
+	object-position: center;
+}
+
+body.player-focus .module.ha-media .ha-media-art-overlay {
+	display: none;
+}
+
+body.player-focus .module.ha-media .ha-media-card-body {
+	position: relative;
+	z-index: 1;
+	min-height: 0;
+	justify-content: flex-start;
+	padding: 14px 16px 18px;
+	background: #000;
 }
