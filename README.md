@@ -41,14 +41,28 @@ cp .env.example .env
 # 編輯 .env
 
 docker compose pull    # 或 docker build -t pimirror:latest .
-docker compose up -d
+./scripts/docker-kiosk-up.sh
+```
+
+Kiosk 需要 host 上已存在 `$XDG_RUNTIME_DIR`（Wayland runtime）。若尚未登入桌面：
+
+```bash
+loginctl enable-linger $USER   # 開機建立 /run/user/$(id -u)
+sudo reboot
+# 或先登入桌面後再 docker up
+```
+
+若只要 API、不需全螢幕，改用 server compose（無 Wayland 掛載）：
+
+```bash
+docker compose -f docker-compose.server.yml up -d
 ```
 
 ### 模式
 
 | 指令 | 說明 |
 |------|------|
-| `docker compose up -d` | Kiosk（API + Electron 全螢幕） |
+| `docker compose up -d` | Kiosk（API + Electron 全螢幕）— 建議用 `./scripts/docker-kiosk-up.sh` |
 | `docker compose -f docker-compose.server.yml up -d` | 僅 API（port 8090） |
 
 ### `.env` 主要變數

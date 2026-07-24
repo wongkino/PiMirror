@@ -1,7 +1,7 @@
 # PiMirror — kiosk on Raspberry Pi (Wayland + GPIO from host).
 #
 #   cp .env.example .env
-#   docker compose up -d
+#   ./scripts/docker-kiosk-up.sh
 
 services:
   pimirror:
@@ -23,10 +23,10 @@ services:
       HA_PORT: ${HA_PORT:-8123}
       HA_TOKEN: ${HA_TOKEN:-}
       WAYLAND_DISPLAY: ${WAYLAND_DISPLAY:-wayland-0}
-      XDG_RUNTIME_DIR: ${XDG_RUNTIME_DIR:-/run/user/1000}
+      XDG_RUNTIME_DIR: ${XDG_RUNTIME_DIR:-/run/user/${UID:-1000}}
       DISPLAY: ${DISPLAY:-:0}
     volumes:
-      - ${XDG_RUNTIME_DIR:-/run/user/1000}:${XDG_RUNTIME_DIR:-/run/user/1000}
+      - ${XDG_RUNTIME_DIR:-/run/user/${UID:-1000}}:${XDG_RUNTIME_DIR:-/run/user/${UID:-1000}}
     devices:
       - /dev/dri:/dev/dri
       - /dev/gpiomem:/dev/gpiomem

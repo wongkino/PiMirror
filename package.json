@@ -15,7 +15,7 @@
 		"server": "./scripts/start-server.sh",
 		"kiosk": "./scripts/start-kiosk.sh",
 		"docker:build": "docker build -t pimirror:latest .",
-		"docker:up": "docker compose up -d",
+		"docker:up": "./scripts/docker-kiosk-up.sh",
 		"docker:down": "docker compose down"
 	},
 	"optionalDependencies": {
