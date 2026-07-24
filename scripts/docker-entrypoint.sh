@@ -10,13 +10,7 @@ SERVER_PID=""
 
 cd "$PI_ROOT"
 
-# shellcheck source=load-config-env.sh
-. "$PI_ROOT/scripts/load-config-env.sh"
-if [[ -f "$PI_ROOT/config/config.env" ]]; then
-	_pi_load_config_env "$PI_ROOT/config/config.env"
-fi
-
-export DASHBOARD_PORT
+export DASHBOARD_PORT="${DASHBOARD_PORT:-8090}"
 export WAYLAND_DISPLAY="${WAYLAND_DISPLAY:-wayland-0}"
 export DISPLAY="${DISPLAY:-:0}"
 export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"

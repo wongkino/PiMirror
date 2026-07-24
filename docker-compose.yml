@@ -1,9 +1,7 @@
-# PiMirror — pull and run on Raspberry Pi (kiosk + GPIO + Wayland from host).
+# PiMirror — kiosk on Raspberry Pi (Wayland + GPIO from host).
 #
+#   cp .env.example .env
 #   docker compose up -d
-#
-# First time: copy and edit config
-#   cp config/config.env.sample config/config.env
 
 services:
   pimirror:
@@ -14,12 +12,20 @@ services:
     network_mode: host
     environment:
       RUN_MODE: kiosk
-      DASHBOARD_PORT: "8090"
+      DASHBOARD_PORT: ${DASHBOARD_PORT:-8090}
+      HKO_STATION: ${HKO_STATION:-元朗公園}
+      CALENDAR_URL: ${CALENDAR_URL:-}
+      CALENDAR_NAME: ${CALENDAR_NAME:-行事曆}
+      CALENDAR_COLOR: ${CALENDAR_COLOR:-#0a84ff}
+      HOLIDAYS_ICS_URL: ${HOLIDAYS_ICS_URL:-https://www.1823.gov.hk/common/ical/tc.ics}
+      HA_URL: ${HA_URL:-http://10.0.0.2:8123}
+      HA_HOST: ${HA_HOST:-10.0.0.2}
+      HA_PORT: ${HA_PORT:-8123}
+      HA_TOKEN: ${HA_TOKEN:-}
       WAYLAND_DISPLAY: ${WAYLAND_DISPLAY:-wayland-0}
       XDG_RUNTIME_DIR: ${XDG_RUNTIME_DIR:-/run/user/1000}
       DISPLAY: ${DISPLAY:-:0}
     volumes:
-      - ./config/config.env:/app/config/config.env:ro
       - ${XDG_RUNTIME_DIR:-/run/user/1000}:${XDG_RUNTIME_DIR:-/run/user/1000}
     devices:
       - /dev/dri:/dev/dri

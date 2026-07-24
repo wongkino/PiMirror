@@ -39,7 +39,6 @@ COPY gpio ./gpio
 COPY scripts/load-config-env.sh scripts/docker-entrypoint.sh ./scripts/
 
 RUN chmod +x /app/scripts/*.sh \
-	&& cp /app/config/config.env.sample /app/config/config.env \
 	&& python3 -m venv /app/gpio/.venv \
 	&& /app/gpio/.venv/bin/pip install -q --upgrade pip \
 	&& /app/gpio/.venv/bin/pip install -q adafruit-circuitpython-dht adafruit-blinka

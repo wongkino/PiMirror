@@ -12,9 +12,7 @@ Image 已內建 Node、Electron、Python/DHT11 依賴與 dashboard，**無需 np
 git clone https://github.com/wongkino/PiMirror.git
 cd PiMirror
 cp .env.example .env
-cp config/config.env.sample config/config.env
-# 編輯 config/config.env（HA token、行事曆等）
-# 編輯 .env（UID/GID，執行 id -u / id -g）
+# 編輯 .env（UID/GID、HA_TOKEN、CALENDAR_URL 等）
 ```
 
 ### 2. 建置或拉取 image
@@ -35,7 +33,7 @@ docker build -t pimirror:latest .
 docker compose up -d
 ```
 
-會掛載 host 的 Wayland socket 與 `config.env`，容器內自動跑 **API + Electron 全螢幕**。
+Compose 以 **`environment:`** 從 `.env` 注入設定；僅掛載 Wayland runtime。
 
 ### 4. 僅 API（無螢幕 / 開發）
 
@@ -52,14 +50,18 @@ sudo cp systemd/pimirror-docker.service /etc/systemd/system/
 sudo systemctl enable --now pimirror-docker.service
 ```
 
-### Docker 環境變數
+### Docker 環境變數（`.env`）
 
 | 變數 | 預設 | 說明 |
 |------|------|------|
-| `RUN_MODE` | `kiosk` | `kiosk` 或 `server` |
+| `UID` / `GID` | `1000` | 容器使用者（`id -u` / `id -g`） |
+| `PIMIRROR_IMAGE` | `ghcr.io/.../pimirror:latest` | Docker image |
 | `DASHBOARD_PORT` | `8090` | API 埠 |
-| `WAYLAND_DISPLAY` | `wayland-0` | host Wayland |
-| `XDG_RUNTIME_DIR` | `/run/user/1000` | host runtime dir |
+| `HKO_STATION` | `元朗公園` | 天文台天氣站 |
+| `CALENDAR_URL` | — | 個人 ICS |
+| `HA_URL` / `HA_TOKEN` | — | Home Assistant |
+| `WAYLAND_DISPLAY` | `wayland-0` | kiosk 用 |
+| `XDG_RUNTIME_DIR` | `/run/user/1000` | kiosk 用 |
 
 ---
 
@@ -129,7 +131,8 @@ sudo ./scripts/install-deps.sh
 
 ```
 ├── Dockerfile / docker-compose.yml
-├── config/config.env       本機設定（掛載進容器，不 commit）
+├── .env                    Docker 設定（compose environment，不 commit）
+├── config/config.env       原生 PM2 安裝用（不 commit）
 ├── dashboard/
 │   ├── public/             前端
 │   ├── server.js           API
