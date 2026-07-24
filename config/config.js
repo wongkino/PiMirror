@@ -1,11 +1,35 @@
-/* Config
+/* Config — Waveshare landscape strip 1480×320
  *
- * Optimized for Waveshare portrait panel 320×1480.
- * Private values come from config/config.env via ${VAR_NAME}.
- * see https://docs.magicmirror.builders/configuration/introduction.html
+ * Pages: 此刻 / 鏡頭 / 影集 — 控制按鈕已併入此刻頁最右欄。
  */
+
+const haUrl = (() => {
+	try {
+		return new URL((process.env.HA_URL || "http://10.0.0.2:8123").replace(/\/$/, ""));
+	} catch {
+		return new URL("http://10.0.0.2:8123");
+	}
+})();
+const haHost = `${haUrl.protocol}//${haUrl.hostname}`;
+const haPort = Number(haUrl.port || (haUrl.protocol === "https:" ? 443 : 80));
+
+const {
+	HOLIDAYS_NAME,
+	buildPersonalCalendars,
+	personalCalendarHeader
+} = require(`${global.root_path}/config/calendarEnv.js`);
+const personalCalendars = buildPersonalCalendars();
+
+/** 運輸署特別交通消息路段關鍵字（env 逗號分隔；未設＝預設三路；空字串＝不過濾） */
+const tdTrafficKeywords =
+	process.env.TD_TRAFFIC_LOCATIONS === undefined
+		? ["元朗公路", "大欖隧道", "屯門公路"]
+		: String(process.env.TD_TRAFFIC_LOCATIONS)
+				.split(",")
+				.map((s) => s.trim())
+				.filter(Boolean);
+
 let config = {
-	// Bind all interfaces so LAN can open /homekit pairing UI
 	address: "0.0.0.0",
 	port: 8080,
 	basePath: "/",
@@ -15,7 +39,6 @@ let config = {
 	httpsPrivateKey: "",
 	httpsCertificate: "",
 
-	// Redact SECRET_* from browser /config (not used for calendar/weather URLs)
 	hideConfigSecrets: true,
 
 	language: "zh-tw",
@@ -23,6 +46,16 @@ let config = {
 	logLevel: ["INFO", "LOG", "WARN", "ERROR"],
 	timeFormat: 24,
 	units: "metric",
+
+	watchTargets: [
+		"config/config.js",
+		"config/custom.css",
+		"config/calendarEnv.js",
+		"index.html",
+		"css",
+		"modules",
+		"serveronly"
+	],
 
 	electronOptions: {
 		fullscreen: true,
@@ -36,20 +69,13 @@ let config = {
 			module: "alert"
 		},
 		{
-			// Edit config/config.env via http://<host>:8080/admin/
-			module: "MMM-EnvEditor"
-		},
-		{
-			// Needed by MMM-HomeKit screenControl (REMOTE_ACTION MONITORON/OFF)
-			// https://github.com/Jopyth/MMM-Remote-Control
 			module: "MMM-Remote-Control",
 			config: {
 				apiKey: process.env.MM_REMOTE_API_KEY || "",
 				secureEndpoints: true,
 				customCommand: {
-					// wlopm alone sometimes leaves Waveshare black; re-assert mode on wake
 					monitorOnCommand:
-						'export WAYLAND_DISPLAY=wayland-0 XDG_RUNTIME_DIR=/run/user/1000; wlopm --on HDMI-A-1; sleep 0.5; wlr-randr --output HDMI-A-1 --on --mode 320x1480',
+						'export WAYLAND_DISPLAY=wayland-0 XDG_RUNTIME_DIR=/run/user/1000; wlopm --on HDMI-A-1; sleep 0.5; wlr-randr --output HDMI-A-1 --on --mode 1480x320',
 					monitorOffCommand:
 						'export WAYLAND_DISPLAY=wayland-0 XDG_RUNTIME_DIR=/run/user/1000; wlopm --off HDMI-A-1',
 					monitorStatusCommand:
@@ -58,8 +84,6 @@ let config = {
 			}
 		},
 		{
-			// HomeKit bridge for Apple Home — pair via QR in module helper UI
-			// https://github.com/Fabrizz/MMM-HomeKit
 			module: "MMM-HomeKit",
 			config: {
 				screenControl: {
@@ -68,7 +92,7 @@ let config = {
 				accentColor: false,
 				pageControl: {
 					name: "MagicMirror Pages",
-					pages: ["主頁", "睡房", "Sonarr"]
+					pages: ["此刻", "鏡頭", "影集"]
 				},
 				playerFocus: {
 					name: "Player Focus"
@@ -78,53 +102,52 @@ let config = {
 			}
 		},
 		{
-			// https://github.com/edward-shen/MMM-pages
-			// Page 0 = main; page 1 = Home Assistant; page 2 = Sonarr
 			module: "MMM-pages",
 			config: {
-				animationTime: 400,
+				animationTime: 350,
 				timings: { default: 0 },
 				rotationHomePage: 0,
 				homePage: 0,
 				modules: [
 					["page0"],
-					["page1"],
-					["page2"]
+					["page2"],
+					["page3"]
 				],
 				fixed: [
 					"MMM-PageSwipe",
 					"MMM-Remote-Control",
 					"MMM-HomeKit",
-					"MMM-EnvEditor",
 					"alert"
 				]
 			}
 		},
 		{
-			// Swipe up/left = next page; down/right = previous (Waveshare touch)
 			module: "MMM-PageSwipe",
 			config: {
-				minDistance: 70,
+				minDistance: 60,
 				maxTime: 900,
+				// 鏡頭頁為滿版 video：不可忽略 UniFi／video，否則無法滑走
 				ignoreSelector:
-					"button, a, input, .indicator, .circle-wrapper, .mmm-unifiprotect-native-live, video, iframe, .mmm-playerfocus-btn, .mmm-playerfocus-brightness, .mmm-playerfocus-brightness-slider, .MMM-PlayerFocus, .ha-entity, .ha-touch-root, .ha-media-btn, .ha-climate-btn, .ha-brightness-slider"
+					"button, a, input, .indicator, .circle-wrapper, .mmm-playerfocus-btn, .mmm-playerfocus-brightness, .mmm-playerfocus-brightness-slider, .MMM-PlayerFocus, .ha-entity, .ha-touch-root, .ha-media-btn, .ha-media-progress, .ha-media-progress-track, .ha-climate-btn, .ha-brightness-slider"
 			}
 		},
+
+		/* —— Page 0 此刻：左欄時間天氣 —— */
 		{
 			module: "clock",
 			classes: "page0",
-			position: "top_bar",
+			position: "top_left",
 			config: {
 				displaySeconds: false,
 				showPeriod: false,
-				dateFormat: "MMM D (ddd)",
+				dateFormat: "M[月]D[日] ddd",
 				showWeek: false
 			}
 		},
 		{
 			module: "weather",
-			classes: "page0",
-			position: "upper_third",
+			classes: "page0 weather-current",
+			position: "top_left",
 			config: {
 				weatherProvider: "hko",
 				type: "current",
@@ -136,168 +159,195 @@ let config = {
 				showFeelsLike: false,
 				roundTemp: true,
 				showPrecipitationAmount: false,
-				showPrecipitationProbability: true,
+				showPrecipitationProbability: false,
 				appendLocationNameToHeader: false
 			}
 		},
 		{
-			// HKO Special Weather Tips — https://data.weather.gov.hk (dataType=swt)
-			// Hidden when no tip is in force
-			module: "MMM-HKO-SpecialTips",
-			classes: "page0",
-			position: "upper_third",
-			config: {
-				lang: "tc",
-				header: "特別天氣提示",
-				maxTips: 2,
-				hideWhenEmpty: true,
-				// Official HKO frequency: 當有更新數據時 — poll every 1 min to catch updates
-				updateInterval: 60 * 1000
-			}
-		},
-		{
 			module: "weather",
-			classes: "page0",
-			position: "upper_third",
+			classes: "page0 weather-forecast",
+			position: "top_left",
 			config: {
 				weatherProvider: "hko",
 				type: "forecast",
 				themeDir: "themes/animated",
 				maxNumberOfDays: 3,
-				tableClass: "small",
+				tableClass: "xsmall",
 				fade: false,
 				roundTemp: true,
 				colored: true,
 				showPrecipitationProbability: true,
-				appendLocationNameToHeader: false
+				appendLocationNameToHeader: false,
+				forecastDateFormat: "ddd"
 			}
 		},
+
+		/* —— Page 0 此刻：中欄到站（上）＋特別天氣（下）／行事曆／播放 —— */
 		{
-			// 268X 洪福邨開出 + 276P 洪水橋站往上水
 			module: "MMM-HK-Transport-ETA",
 			classes: "page0 kmb-eta",
-			position: "upper_third",
+			position: "middle_center",
 			config: {
+				// 268X @ 洪水橋(洪福邨)總站開出；276P @ 洪元路洪福邨往上水
 				transportETAProvider: "kmb",
 				sta: "2DDEDEFABFB2ED87",
 				stop_ids: [
 					"2DDEDEFABFB2ED87",
-					"0BFC5F7FC4A2D431"
+					"A856593C105D479B"
 				],
+				routeStops: {
+					"268X": "2DDEDEFABFB2ED87",
+					"276P": "A856593C105D479B"
+				},
 				routes: ["268X", "276P"],
 				dirs: ["O"],
 				stopInfo: {
-					stopName: "到站提示",
+					stopName: "",
 					lastUpdated: 1
 				},
 				reloadInterval: 10 * 1000,
 				updateInterval: 0,
 				animationSpeed: 0,
-				tableClass: "xsmall",
-				showHeader: true,
+				tableClass: "small",
+				showHeader: false,
 				showDestination: false,
+				displayRelativeTime: true,
 				hideWhenEmpty: false,
 				maximumEntries: 2
 			}
 		},
 		{
+			// 通知區域（上）：道路交通消息 — 紅色
+			module: "MMM-TD-TrafficNews",
+			classes: "page0 notifications td-traffic",
+			position: "middle_center",
+			config: {
+				lang: "tc",
+				header: "",
+				maxItems: 2,
+				hideWhenEmpty: true,
+				updateInterval: 60 * 1000,
+				locationKeywords: tdTrafficKeywords
+			}
+		},
+		{
+			// 通知區域（下）：天氣警告信號 — 黃色（只顯示 warnsum 信號名稱）
+			module: "MMM-HKO-SpecialTips",
+			classes: "page0 notifications hko-weather",
+			position: "middle_center",
+			config: {
+				lang: "tc",
+				header: "",
+				maxTips: 5,
+				hideWhenEmpty: true,
+				updateInterval: 60 * 1000
+			}
+		},
+		{
+			module: "MMM-DHT11",
+			classes: "page0 mmm-dht11",
+			position: "middle_center",
+			config: {
+				updateInterval: 30 * 1000,
+				gpioPin: 17
+			}
+		},
+		{
 			module: "calendar",
 			classes: "page0 calendar-holidays",
-			header: "公眾假期",
-			position: "upper_third",
+			header: HOLIDAYS_NAME,
+			position: "middle_center",
 			config: {
 				maximumEntries: 1,
-				maximumNumberOfDays: 7,
+				maximumNumberOfDays: 60,
 				hideWhenEmpty: true,
-				tableClass: "xsmall",
+				tableClass: "small",
 				wrapEvents: false,
-				maxTitleLength: 12,
+				maxTitleLength: 16,
 				fade: false,
 				displaySymbol: false,
 				coloredText: true,
 				timeFormat: "absolute",
-				dateFormat: "M[月]D[日]",
+				dateFormat: "M[月]D[日] ddd",
 				dateFormatWithYear: "YYYY[年]M[月]D[日]",
-				fullDayEventDateFormat: "M[月]D[日]",
+				fullDayEventDateFormat: "M[月]D[日] ddd",
 				fullDayEventDateFormatWithYear: "YYYY[年]M[月]D[日]",
+				nextDaysRelative: true,
 				hideTime: true,
 				calendars: [
 					{
 						fetchInterval: 7 * 24 * 60 * 60 * 1000,
-						name: "公眾假期",
-						color: "#ff4d4f",
+						name: HOLIDAYS_NAME,
+						color: "#ff453a",
 						url: "${HOLIDAYS_ICS_URL}"
 					}
 				]
 			}
 		},
-		{
-			module: "calendar",
-			classes: "page0 calendar-personal",
-			header: "${CALENDAR_NAME}",
-			position: "upper_third",
-			config: {
-				maximumEntries: 20,
-				maximumNumberOfDays: 7,
-				tableClass: "xsmall",
-				wrapEvents: false,
-				maxTitleLength: 12,
-				fade: false,
-				displaySymbol: false,
-				coloredText: true,
-				timeFormat: "absolute",
-				dateFormat: "M[月]D[日]",
-				dateFormatWithYear: "YYYY[年]M[月]D[日]",
-				fullDayEventDateFormat: "M[月]D[日]",
-				fullDayEventDateFormatWithYear: "YYYY[年]M[月]D[日]",
-				hideDuplicates: true,
-				hideTime: true,
-				calendars: [
-					{
-						fetchInterval: 15 * 60 * 1000,
-						name: "${CALENDAR_NAME}",
-						color: "${CALENDAR_COLOR}",
-						url: "${CALENDAR_URL}"
+		...(personalCalendars.length
+			? [
+				{
+					module: "calendar",
+					classes: "page0 calendar-personal",
+					header: personalCalendarHeader(personalCalendars),
+					position: "middle_center",
+					config: {
+						maximumEntries: 6,
+						maximumNumberOfDays: 30,
+						hideWhenEmpty: true,
+						tableClass: "small",
+						wrapEvents: false,
+						maxTitleLength: 26,
+						fade: true,
+						fadePoint: 0.72,
+						displaySymbol: false,
+						coloredText: false,
+						coloredBorder: true,
+						timeFormat: "dateheaders",
+						flipDateHeaderTitle: true,
+						dateFormat: "M/D ddd",
+						dateFormatWithYear: "YYYY/M/D ddd",
+						fullDayEventDateFormat: "M/D ddd",
+						fullDayEventDateFormatWithYear: "YYYY/M/D ddd",
+						hideDuplicates: true,
+						hideTime: false,
+						showEnd: true,
+						mergeConsecutiveFullDayEvents: true,
+						calendars: personalCalendars
 					}
-				]
-			}
-		},
+				}
+			]
+			: []),
 		{
-			// https://github.com/mathewmeconry/MMM-HomeAssistant-Touch
-			// Media players on main page (replaces MMM-NowPlaying)
 			module: "MMM-HomeAssistant-Touch",
 			classes: "page0 ha-media",
-			header: "播放器",
-			position: "upper_third",
+			position: "middle_center",
 			config: {
-				host: `http://${process.env.HA_HOST || "10.0.0.2"}`,
-				port: Number(process.env.HA_PORT || 8123),
+				host: haHost,
+				port: haPort,
 				token: process.env.HA_TOKEN || "",
 				ignoreCert: true,
 				entities: [
 					"media_player.wo_shi_homepod_mini",
 					"media_player.shui_fang_shui_fang_de_apple_tv",
-					"media_player.av_samsung_soundbar_q990b"
+					"media_player.ke_ting_samsung_soundbar_q990b",
+					"media_player.av_samsung_soundbar_q990b_2"
 				]
 			}
 		},
 		{
-			// Overlay button on HA「播放器」; HomeKit can toggle too
 			module: "MMM-PlayerFocus",
 			classes: "page0",
-			position: "upper_third",
+			position: "middle_center",
 			config: {}
 		},
 		{
-			// https://github.com/mathewmeconry/MMM-HomeAssistant-Touch
-			// Touch controls: lights (brightness), switches, climate
 			module: "MMM-HomeAssistant-Touch",
-			classes: "page1",
-			header: "睡房",
-			position: "top_bar",
+			classes: "page0 ha-controls",
+			position: "middle_center",
 			config: {
-				host: `http://${process.env.HA_HOST || "10.0.0.2"}`,
-				port: Number(process.env.HA_PORT || 8123),
+				host: haHost,
+				port: haPort,
 				token: process.env.HA_TOKEN || "",
 				ignoreCert: true,
 				entities: [
@@ -309,28 +359,12 @@ let config = {
 				]
 			}
 		},
+
+		/* —— Page 2 鏡頭 —— */
 		{
-			// https://github.com/gravitykillseverything/MMM-Sonarr
-			// Fill SONARR_* in config/config.env — shown on page 2 (top of strip)
-			module: "MMM-Sonarr",
-			classes: "page2",
-			header: "Sonarr",
-			position: "top_bar",
-			config: {
-				apiKey: "${SONARR_API_KEY}",
-				baseUrl: "${SONARR_BASE_URL}",
-				upcomingLimit: 6,
-				historyLimit: 4,
-				updateInterval: 5 * 60 * 1000,
-				language: "zh-tw"
-			}
-		},
-		{
-			// https://github.com/awestley/MMM-UniFiProtect
-			// Fill UNIFI_PROTECT_* in config/config.env (local Protect admin)
 			module: "MMM-UniFiProtect",
-			classes: "page0",
-			position: "bottom_bar",
+			classes: "page2",
+			position: "middle_center",
 			config: {
 				host: "${UNIFI_PROTECT_HOST}",
 				username: "${UNIFI_PROTECT_USERNAME}",
@@ -351,12 +385,20 @@ let config = {
 				debugLogging: false
 			}
 		},
+
+		/* —— Page 3 影集 —— */
 		{
-			module: "MMM-LocalIP",
-			classes: "page0",
-			position: "bottom_bar",
+			module: "MMM-Sonarr",
+			classes: "page3",
+			header: "影集",
+			position: "middle_center",
 			config: {
-				prefix: "IP "
+				apiKey: "${SONARR_API_KEY}",
+				baseUrl: "${SONARR_BASE_URL}",
+				upcomingLimit: 8,
+				historyLimit: 6,
+				updateInterval: 5 * 60 * 1000,
+				language: "zh-tw"
 			}
 		}
 	]

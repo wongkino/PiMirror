@@ -1,14 +1,13 @@
-/* MagicMirror² — HKO Special Weather Tips (特別天氣提示) */
+/* MagicMirror² — HKO Warning Signals (天氣警告信號 / warnsum) */
 
 "use strict";
 
 Module.register("MMM-HKO-SpecialTips", {
 	defaults: {
-		// Official open-data frequency is「當有更新數據時」; 1 min is a practical poll interval.
 		updateInterval: 60 * 1000,
 		lang: "tc",
-		maxTips: 2,
-		header: "特別天氣提示",
+		maxTips: 5,
+		header: "",
 		hideWhenEmpty: true
 	},
 
@@ -58,7 +57,10 @@ Module.register("MMM-HKO-SpecialTips", {
 		this.tips.slice(0, this.config.maxTips).forEach((tip) => {
 			const item = document.createElement("div");
 			item.className = "mmm-hko-swt-item";
-			item.textContent = tip;
+			const text = document.createElement("div");
+			text.className = "mmm-hko-swt-text";
+			text.textContent = tip;
+			item.appendChild(text);
 			list.appendChild(item);
 		});
 

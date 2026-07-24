@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+	<meta name="color-scheme" content="dark" />
+	<title>PiMirror</title>
+	<style>html,body{background:#000!important;margin:0;height:100%;}</style>
+	<link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+	<div class="ambient" aria-hidden="true"></div>
+	<main class="strip" id="strip">
+		<section class="panel timewx" style="--i:0">
+			<header class="panel-title"><i class="dot wx"></i>時間天氣</header>
+			<div class="timewx-body">
+				<div class="timewx-main">
+					<div class="timewx-card">
+						<div class="timewx-clock">
+							<div class="clock-date">
+								<span class="clock-md" id="dateMd">—</span>
+								<span class="clock-week" id="dateWeek">週—</span>
+							</div>
+							<div class="clock-time-wrap">
+								<div class="clock-time" id="time">--:--</div>
+							</div>
+						</div>
+						<div class="timewx-live">
+							<div class="wx-today">今天</div>
+							<div class="wx-main">
+								<div class="wx-anim-wrap">
+									<div class="wx-anim" id="wxAnim" data-anim="cloudy" aria-hidden="true">
+										<div class="anim-bg"></div>
+										<div class="anim-sun"><span class="sun-rays"></span></div>
+										<div class="anim-cloud">
+											<span class="puff p1"></span>
+											<span class="puff p2"></span>
+											<span class="puff p3"></span>
+										</div>
+										<div class="anim-rain"><i></i><i></i><i></i><i></i><i></i></div>
+										<div class="anim-bolt"></div>
+										<div class="anim-wind"><i></i><i></i><i></i></div>
+									</div>
+								</div>
+								<div class="wx-info">
+									<div class="wx-temp-row">
+										<div class="wx-temp" id="wxTemp">—<span class="wx-unit">°</span></div>
+										<div class="wx-range" id="wxRange" hidden></div>
+									</div>
+									<div class="wx-meta">
+										<span class="wx-station" id="wxStation">—</span>
+										<span class="wx-meta-sep" aria-hidden="true">·</span>
+										<span class="wx-hum" id="wxHum"><i class="wx-hum-icon" aria-hidden="true"></i>—%</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="forecast-row" id="forecastRow">
+							<div class="forecast-day skeleton"></div>
+							<div class="forecast-day skeleton"></div>
+							<div class="forecast-day skeleton"></div>
+						</div>
+						<div class="dht" id="dht">
+							<span class="dht-label">室內</span>
+							<span class="dht-readings">
+								<span class="dht-temp" id="dhtTemp">—<span class="dht-unit">°</span></span>
+								<span class="dht-sep" aria-hidden="true"></span>
+								<span class="dht-hum" id="dhtHum">—%</span>
+							</span>
+						</div>
+					</div>
+				</div>
+				<div class="timewx-aside">
+					<div class="timewx-footer">
+						<ul class="warn-chips" id="warnChips" hidden></ul>
+						<div class="wx-tips" id="wxTips" hidden>
+							<div class="wx-tips-viewport" id="wxTipsViewport">
+								<div class="wx-tips-track" id="wxTipsTrack"></div>
+							</div>
+						</div>
+						<div class="storm-block" id="stormPanel" hidden>
+							<div class="storm-head">
+								<span class="storm-label">風暴</span>
+								<span class="storm-name" id="stormName"></span>
+							</div>
+							<svg class="storm-map" id="stormMap" viewBox="0 0 240 220" preserveAspectRatio="xMidYMid meet"></svg>
+							<div class="storm-meta" id="stormMeta"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="panel calendar" style="--i:1">
+			<header class="panel-title"><i class="dot cal"></i>行程</header>
+			<ul class="cal-list" id="calList">
+				<li class="dimmed">載入中…</li>
+			</ul>
+		</section>
+
+		<section class="panel ha-media-panel" id="haMediaPanel" hidden style="--i:2">
+			<header class="panel-title"><i class="dot media"></i>播放</header>
+			<div class="ha-media-root" id="haMediaRoot"></div>
+		</section>
+
+		<section class="panel ha" style="--i:3">
+			<header class="panel-title"><i class="dot ha"></i>控制</header>
+			<div class="ha-root" id="haRoot">
+				<div class="dimmed">載入中…</div>
+			</div>
+		</section>
+	</main>
+	<script src="/app.js"></script>
+</body>
+</html>

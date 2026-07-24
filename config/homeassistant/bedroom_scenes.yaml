@@ -1,7 +1,0 @@
-# 睡房場景已移除。
-#
-# 請在 NAS 執行其中一種：
-# A) 刪除檔案：/config/packages/bedroom_scenes.yaml
-# B) 用本檔覆蓋同路徑後，到 HA「開發者工具 → YAML」重新載入場景
-#
-# 完成後 scene.shui_jue、scene.qi_chuang 會消失。

@@ -1,470 +1,859 @@
-/* Custom CSS — Waveshare 320×1480 portrait panel */
+/* Custom CSS — Waveshare 1480×320 landscape strip
+ * Apple iOS dark (SF / System Blue) on MagicMirror pure black
+ */
 
 :root {
-	--color-text: #999;
-	--color-text-dimmed: #666;
-	--color-text-bright: #fff;
-	--color-background: #000;
+	--bg-primary: #000000;
+	--bg-secondary: #1c1c1e;
 
-	--font-primary: "Roboto Condensed";
-	--font-secondary: "Roboto";
+	--text-primary: #f5f5f7;
+	--text-secondary: #98989d;
+	--text-tertiary: #636366;
 
-	/* Base scale for ~320px width — enlarged for readability */
+	--accent: #0a84ff;
+	--danger: #ff453a;
+	--warning: #ffd60a;
+	--cool: #64d2ff;
+
+	--color-text: var(--text-secondary);
+	--color-text-dimmed: var(--text-tertiary);
+	--color-text-bright: var(--text-primary);
+	--color-background: var(--bg-primary);
+
+	--font-primary: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+		"Helvetica Neue", "Segoe UI", sans-serif;
+	--font-secondary: var(--font-primary);
+
 	--font-size: 18px;
-	--font-size-xsmall: 0.8rem;
-	--font-size-small: 0.95rem;
-	--font-size-medium: 1.35rem;
-	--font-size-large: 2.6rem;
-	--font-size-xlarge: 3rem;
+	--font-size-xsmall: 0.78rem;
+	--font-size-small: 0.92rem;
+	--font-size-medium: 1.15rem;
+	--font-size-large: 3.2rem;
+	--font-size-xlarge: 3.6rem;
 
-	--gap-body-top: 12px;
-	--gap-body-right: 10px;
-	--gap-body-bottom: 12px;
-	--gap-body-left: 10px;
-	--gap-modules: 12px;
+	--space-sm: 8px;
+	--space-md: 16px;
+
+	--gap-body-top: 0px;
+	--gap-body-right: 0px;
+	--gap-body-bottom: 0px;
+	--gap-body-left: 0px;
+	--gap-modules: 0px;
+
+	--panel-width: 1480px;
+	--panel-height: 320px;
+	/* 橫列貼滿：時間天氣 | 到站 | 行事曆(flex) | 播放 | 控制 */
+	--col-time: 240px;
+	--col-bus: 200px;
+	--col-media: 228px;
+	--col-controls: 176px;
+	--col-gap: 8px;
+	/* 全畫面四邊／欄內水平 gutter 統一 */
+	--panel-inset: 8px;
+	--module-pad-x: 8px;
+
+	--border-subtle: rgba(255, 255, 255, 0.28);
+	--border-muted: rgba(255, 255, 255, 0.18);
+	--border-card: rgba(255, 255, 255, 0.22);
+	--border-on: rgba(255, 255, 255, 0.55);
+	--fill-press: rgba(0, 0, 0, 0.55);
+	--radius-lg: 16px;
+	--radius-pill: 980px;
+	--touch-min: 44px;
+	--ease-apple: cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
-/* Prevent page overlap after display wake (Wayland/labwc may restore opacity) */
+html {
+	width: 100% !important;
+	height: 100% !important;
+	min-width: 100%;
+	min-height: 100%;
+	max-width: none !important;
+	max-height: none !important;
+	overflow: hidden !important;
+	margin: 0;
+	padding: 0;
+	cursor: none;
+	background: var(--bg-primary) !important;
+}
+
+html,
+body {
+	font-family: var(--font-primary);
+	background: var(--bg-primary) !important;
+	color: var(--text-primary);
+	-webkit-font-smoothing: antialiased;
+}
+
+body {
+	/* 固定畫布；貼頂 contain，實機 1:1；瀏覽器請用約 1480×320 視窗預覽 */
+	--panel-scale: min(
+		calc(100vw / var(--panel-width)),
+		calc(100vh / var(--panel-height))
+	);
+	width: var(--panel-width) !important;
+	height: var(--panel-height) !important;
+	max-width: none;
+	max-height: none;
+	margin: 0 !important;
+	padding: 0 !important;
+	overflow: hidden;
+	box-sizing: border-box;
+	position: absolute;
+	left: 50%;
+	top: 0;
+	transform: translateX(-50%) scale(var(--panel-scale));
+	transform-origin: top center;
+}
+
+/* 覆蓋 main.css 對 fullscreen 的負 inset（gap 已為 0） */
+.region.fullscreen {
+	inset: 0 !important;
+}
+
 .module.hidden {
 	opacity: 0 !important;
 	visibility: hidden !important;
 	pointer-events: none !important;
 	position: fixed !important;
+	flex: 0 0 0 !important;
+	height: 0 !important;
+	width: 0 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	overflow: hidden !important;
+	border: none !important;
 }
 
-/* Single-column: never sit left/right side-by-side on this width */
-.region.top.left,
-.region.top.right,
-.region.bottom.left,
-.region.bottom.right {
-	left: 0;
-	right: 0;
-	width: 100%;
-	text-align: center;
-	transform: none;
+.region.bottom.bar,
+.region.upper.third,
+.region.lower.third,
+.region.fullscreen.below,
+.region.fullscreen.above {
+	display: none !important;
 }
 
-.region.top.left,
-.region.top.right,
-.region.top.center {
-	top: 100%;
-}
-
-.region.right {
-	text-align: center;
-}
-
-.region.bar,
-.region.third,
-.region.middle.center {
-	width: 100%;
-	max-width: 100%;
-}
-
-/* Pack modules for tall 1480px strip — weather + calendar stack in upper_third */
-.region.upper.third {
-	top: 90px;
-	transform: none;
-}
-
-.region.middle.center {
-	top: 520px;
-	transform: none;
-}
-
-.region.lower.third {
-	top: auto;
-	bottom: 160px;
-	transform: none;
-	width: 100%;
-}
-
-/* Keep calendar readable under weather */
-.module.calendar {
-	margin-top: 6px;
-	margin-bottom: 4px;
+/* top.bar 是 top_left／top_right 的父層，必須可見當殼 */
+.region.top.bar {
+	top: 0 !important;
+	left: 0 !important;
+	right: 0 !important;
+	width: 100% !important;
+	height: 100% !important;
+	transform: none !important;
 	overflow: visible;
-	text-align: left;
+	pointer-events: none;
+	z-index: 1;
 }
 
-.module.calendar header {
-	text-align: left;
-	width: 100%;
-	box-sizing: border-box;
+.region.top.bar > .container {
+	display: none !important;
 }
 
-.module.calendar-holidays header {
-	color: #ff4d4f;
-	border-bottom-color: #ff4d4f;
+.region.top.left,
+.region.top.right,
+.region.middle.center {
+	pointer-events: auto;
 }
 
-.module.calendar-personal header {
-	color: #58a6ff;
-	border-bottom-color: #58a6ff;
-}
-
-.module {
-	width: 100%;
-	max-width: 100%;
-	box-sizing: border-box;
-	overflow: hidden;
-}
-
-/* All module titles: bright emphasized style */
+header,
 .module header {
-	font-size: var(--font-size-small);
+	text-transform: none !important;
+	font-size: 0.82rem;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	color: var(--text-secondary);
+	margin: 0 0 6px;
+	padding: 0;
+	border: none;
 	line-height: 1.25;
-	margin-bottom: 6px;
-	padding-bottom: 3px;
-	color: var(--color-text-bright);
-	border-bottom-color: var(--color-text-bright);
 }
 
-/* Clock: fit narrow top bar */
-.clock {
-	text-align: center;
+/* 各模組標題一律隱藏（本面板自帶區塊語意） */
+.module.clock header,
+.module.weather-current > header,
+.module.weather-forecast > header,
+.module.kmb-eta > header,
+.module.kmb-eta .module-header,
+.module.notifications > header,
+.module.notifications .module-header,
+.region.middle.center .module.calendar-personal > header,
+.region.middle.center .module.calendar-personal .module-header,
+.module.ha-media > header,
+.module.ha-media .module-header,
+.module.ha-controls > header,
+.module.ha-controls .module-header {
+	display: none !important;
 }
 
-.clock .date {
-	font-size: var(--font-size-small);
-}
+/* ========== Page 0 regions ========== */
 
-.clock .time {
-	font-size: var(--font-size-large);
-	letter-spacing: -1px;
-}
-
-.xlarge {
-	letter-spacing: -1px;
-}
-
-/* Weather tables */
-.weather table,
-.module table {
-	width: 100%;
-	table-layout: fixed;
-}
-
-/* KMB / HK Transport ETA — keep readable on 320px */
-.MMM-HK-Transport-ETA,
-.module.MMM-HK-Transport-ETA {
+/* 左：時間＋天氣 —— 整欄拉滿 320 高 */
+.region.top.left {
+	top: 0 !important;
+	left: 0 !important;
+	right: auto !important;
+	width: var(--col-time) !important;
+	height: 100% !important;
+	transform: none !important;
+	overflow: hidden;
 	text-align: left;
-	width: 100%;
+	z-index: 2;
 }
 
-.MMM-HK-Transport-ETA table {
-	font-size: var(--font-size-small);
-}
-
-/* Home Assistant Touch — fit 320px portrait */
-.module.MMM-HomeAssistant-Touch {
-	text-align: center;
-	width: 100%;
-}
-
-.ha-touch-root {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 10px;
-	width: 100%;
-	box-sizing: border-box;
-	padding: 2px 0 8px;
-}
-
-.ha-touch-root .ha-entity.ha-btn {
+.region.top.left .container {
 	position: relative;
+	height: 100%;
 	display: flex;
 	flex-direction: column;
-	align-items: center;
 	justify-content: space-between;
-	height: auto;
-	min-height: 7.2rem;
-	width: 100%;
-	margin: 0;
-	padding: 14px 10px 12px;
-	box-sizing: border-box;
-	border: 1px solid rgba(255, 255, 255, 0.12);
-	border-radius: 14px;
-	background: linear-gradient(165deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
-	color: var(--color-text-bright);
-	font-size: var(--font-size-small);
-	touch-action: manipulation;
-	cursor: pointer;
-	user-select: none;
-	-webkit-tap-highlight-color: transparent;
-	transition: background 0.2s ease, border-color 0.2s ease, transform 0.12s ease;
-}
-
-.ha-touch-root .ha-entity.ha-btn:active {
-	transform: scale(0.96);
-}
-
-.ha-touch-root .ha-entity.ha-btn .ha-icon {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 2.4rem;
-	height: 2.4rem;
-	border-radius: 50%;
-	background: rgba(255, 255, 255, 0.06);
-	margin-bottom: 8px;
-}
-
-.ha-touch-root .ha-entity.ha-btn .ha-icon i {
-	font-size: 1.15rem;
-	color: rgba(255, 255, 255, 0.55);
-	line-height: 1;
-}
-
-.ha-touch-root .ha-entity.ha-btn .title {
-	display: block;
-	width: 100%;
-	font-size: 0.92em;
-	font-weight: 500;
-	line-height: 1.25;
-	letter-spacing: 0.02em;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	color: var(--color-text-bright);
-}
-
-.ha-touch-root .ha-entity.ha-btn .status {
-	display: block;
-	margin-top: 8px;
-	padding: 2px 10px;
-	border-radius: 999px;
-	font-size: 0.75em;
-	letter-spacing: 0.06em;
-	color: rgba(255, 255, 255, 0.45);
-	background: rgba(255, 255, 255, 0.06);
-}
-
-/* ON state — accent emphasis */
-.ha-touch-root .ha-entity.ha-btn.on {
-	border-color: rgba(88, 166, 255, 0.7);
-	background: linear-gradient(165deg, rgba(88, 166, 255, 0.32) 0%, rgba(88, 166, 255, 0.08) 100%);
-}
-
-.ha-touch-root .ha-entity.ha-btn.on .ha-icon {
-	background: rgba(88, 166, 255, 0.25);
-}
-
-.ha-touch-root .ha-entity.ha-btn.on .ha-icon i {
-	color: #7ec0ff;
-}
-
-.ha-touch-root .ha-entity.ha-btn.on .status {
-	color: #9fd0ff;
-	background: rgba(88, 166, 255, 0.22);
-}
-
-.ha-touch-root .ha-entity.ha-btn.off .ha-icon i {
-	color: rgba(255, 255, 255, 0.35);
-}
-
-.ha-touch-root .ha-entity.ha-scene {
-	border-color: rgba(88, 166, 255, 0.35);
-	background: linear-gradient(
-		165deg,
-		rgba(88, 166, 255, 0.16) 0%,
-		rgba(255, 255, 255, 0.04) 100%
-	);
-}
-
-.ha-touch-root .ha-entity.ha-scene .ha-icon {
-	background: rgba(88, 166, 255, 0.22);
-}
-
-.ha-touch-root .ha-entity.ha-scene .ha-icon i {
-	color: #9ecbff;
-}
-
-.ha-touch-root .ha-entity.ha-scene .status {
-	color: rgba(158, 203, 255, 0.95);
-}
-
-/* Dimmable light — brightness slider */
-.ha-touch-root .ha-light-dimmable {
 	align-items: stretch;
-	justify-content: flex-start;
-	gap: 10px;
-	min-height: 8.2rem;
+	gap: 6px;
+	overflow: hidden;
+	padding: var(--panel-inset);
+	box-sizing: border-box;
 }
 
-.ha-touch-root .ha-light-top {
-	display: flex;
-	align-items: center;
-	gap: 10px;
+.region.top.left .module {
+	margin: 0 !important;
 	width: 100%;
-}
-
-.ha-touch-root .ha-light-dimmable .ha-icon {
-	margin-bottom: 0;
+	overflow: hidden;
 	flex: 0 0 auto;
 }
 
-.ha-touch-root .ha-light-meta {
-	flex: 1 1 auto;
-	min-width: 0;
-	text-align: left;
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
-}
-
-.ha-touch-root .ha-light-dimmable .title {
-	text-align: left;
-}
-
-.ha-touch-root .ha-light-dimmable .status {
-	align-self: flex-start;
-	margin-top: 0;
-}
-
-.ha-touch-root .ha-brightness-row {
-	width: 100%;
-	padding: 0 2px;
-}
-
-.ha-touch-root .ha-brightness-slider {
-	width: 100%;
-	height: 28px;
-	margin: 0;
-	accent-color: #58a6ff;
-	touch-action: none;
-}
-
-/* Climate control — full width card */
-.ha-touch-root .ha-climate-card {
-	grid-column: 1 / -1;
-	display: flex;
-	flex-direction: column;
-	gap: 12px;
-	width: 100%;
-	margin: 0;
-	padding: 14px 12px;
-	box-sizing: border-box;
-	border: 1px solid rgba(255, 255, 255, 0.12);
-	border-radius: 14px;
-	background: linear-gradient(165deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
-	color: var(--color-text-bright);
-	text-align: left;
-}
-
-.ha-touch-root .ha-climate-card.on {
-	border-color: rgba(88, 166, 255, 0.7);
-	background: linear-gradient(165deg, rgba(88, 166, 255, 0.28) 0%, rgba(88, 166, 255, 0.06) 100%);
-}
-
-.ha-touch-root .ha-climate-head {
-	display: flex;
-	justify-content: space-between;
-	align-items: baseline;
-	gap: 8px;
-}
-
-.ha-touch-root .ha-climate-title {
-	font-size: 1em;
-	font-weight: 600;
-}
-
-.ha-touch-root .ha-climate-mode {
-	font-size: 0.75em;
-	padding: 2px 10px;
-	border-radius: 999px;
-	background: rgba(255, 255, 255, 0.08);
-	color: rgba(255, 255, 255, 0.7);
-}
-
-.ha-touch-root .ha-climate-card.on .ha-climate-mode {
-	background: rgba(88, 166, 255, 0.25);
-	color: #9fd0ff;
-}
-
-.ha-touch-root .ha-climate-temps {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 8px;
-}
-
-.ha-touch-root .ha-climate-current,
-.ha-touch-root .ha-climate-target {
-	padding: 10px;
-	border-radius: 10px;
-	background: rgba(0, 0, 0, 0.25);
+.region.top.left .module.clock {
+	flex: 0 0 auto;
 	text-align: center;
 }
 
-.ha-touch-root .ha-climate-temps .num {
-	display: block;
-	font-size: 1.6em;
-	font-weight: 700;
-	line-height: 1.1;
-	color: #fff;
-}
-
-.ha-touch-root .ha-climate-temps .unit {
-	display: block;
-	margin-top: 4px;
-	font-size: 0.7em;
-	color: rgba(255, 255, 255, 0.5);
-}
-
-.ha-touch-root .ha-climate-controls {
-	display: grid;
-	grid-template-columns: 1fr 1.4fr 1fr;
-	gap: 8px;
-}
-
-.ha-touch-root .ha-climate-btn {
-	appearance: none;
-	border: 1px solid rgba(255, 255, 255, 0.15);
-	background: rgba(255, 255, 255, 0.08);
-	color: #fff;
-	border-radius: 12px;
-	min-height: 44px;
-	font-size: 1.1em;
-	touch-action: manipulation;
-	cursor: pointer;
-}
-
-.ha-touch-root .ha-climate-btn:active {
-	transform: scale(0.96);
-	background: rgba(88, 166, 255, 0.35);
-}
-
-.ha-touch-root .ha-climate-power {
-	font-size: 0.95em;
-	font-weight: 600;
-}
-
-
-/* HA media player — NowPlaying-style big card */
-.module.ha-media .ha-touch-root {
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
+.region.top.left .module.clock .clock {
+	text-align: center;
 	width: 100%;
 }
 
-/* 沒有播放／暫停中的裝置時，整塊播放器（含標題）隱藏 */
+.region.top.left .module.weather-current,
+.region.top.left .module.weather-forecast {
+	overflow: visible;
+	position: relative !important;
+	padding-top: 6px;
+}
+
+.region.top.left .module.weather-current {
+	flex: 0 0 auto;
+}
+
+.region.top.left .module.weather-forecast {
+	flex: 1 1 0;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	justify-content: stretch;
+}
+
+.region.top.left .module.weather-current .module-content,
+.region.top.left .module.weather-forecast .module-content {
+	overflow: visible;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+/* ========== Clock / weather（左欄：即時＋動畫預報） ========== */
+
+.clock .date {
+	font-size: 1.05rem;
+	font-weight: 500;
+	line-height: 1.2;
+	color: var(--text-secondary);
+	margin: 0 0 4px;
+}
+
+.clock .time {
+	font-size: 3.55rem;
+	font-weight: 600;
+	line-height: 0.95;
+	letter-spacing: -0.04em;
+	color: var(--text-primary);
+	font-variant-numeric: tabular-nums;
+	margin: 0;
+}
+
+.module.weather-current .weather-today.animated-weather {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	overflow: visible;
+	flex: 1 1 auto;
+}
+
+.module.weather-current .today-weather-temp {
+	position: relative;
+	left: -5px;
+}
+
+.module.weather-current .temperature,
+.module.weather-current .bright.large,
+.module.weather-current .large.bright,
+.module.weather-current .light.bright.large {
+	font-size: 2.45rem !important;
+	font-weight: 600;
+	line-height: 1.05;
+	font-variant-numeric: tabular-nums;
+}
+
+.module.weather-current .humidity {
+	font-size: 0.95rem;
+	color: var(--text-secondary);
+}
+
+/*
+ * 動畫 SVG：勿用 display:none 藏圖（會令 url(#gradient) 失效、晴天只剩黃邊）。
+ * 改用絕對定位＋零尺寸隱藏；即時／預報共用映射，尺寸用 --wx-icon-size。
+ */
+.module.weather-current {
+	--wx-icon-size: 58px;
+}
+
+.module.weather-forecast {
+	--wx-icon-size: 52px;
+}
+
+.region.top.left .weathericon {
+	position: relative;
+	display: inline-block;
+	overflow: visible;
+}
+
+.region.top.left .weathericon .svg-ico {
+	display: block !important;
+	position: absolute !important;
+	width: 0 !important;
+	height: 0 !important;
+	overflow: hidden !important;
+	opacity: 0 !important;
+	pointer-events: none !important;
+}
+
+.region.top.left .weathericon:is(.wi-day-sunny, .wi-hot) .svg-ico.day-sunny,
+.region.top.left .weathericon.wi-day-cloudy .svg-ico.partly-sun,
+.region.top.left .weathericon:is(.wi-day-showers, .wi-showers) .svg-ico.sun-rain,
+.region.top.left .weathericon:is(.wi-thunderstorm, .wi-night-thunderstorm) .svg-ico.thunder,
+.region.top.left .weathericon:is(.wi-cloudy-windy, .wi-strong-wind) .svg-ico.cloudy-windy,
+.region.top.left .weathericon.wi-night-clear .svg-ico.night-clear,
+.region.top.left .weathericon:is(.wi-night-cloudy, .wi-night-alt-cloudy) .svg-ico.cloudy-night,
+.region.top.left .weathericon.wi-night-showers .svg-ico.night-rain,
+.region.top.left .weathericon:is(.wi-night-rain, .wi-rain) .svg-ico.rain,
+.region.top.left .weathericon:is(.wi-snow, .wi-snowflake-cold, .wi-night-snow) .svg-ico.snow,
+.region.top.left .weathericon:is(.wi-fog, .wi-dust, .wi-humidity) .svg-ico.mist,
+.region.top.left .weathericon.wi-cloudy .svg-ico.cloudy {
+	position: relative !important;
+	width: auto !important;
+	height: auto !important;
+	overflow: visible !important;
+	opacity: 1 !important;
+	pointer-events: auto !important;
+}
+
+.region.top.left .weathericon .svg-ico svg {
+	width: 0 !important;
+	height: auto !important;
+}
+
+.region.top.left .weathericon .svg-ico.cloudy svg,
+.region.top.left .weathericon .svg-ico.cloudy-night svg,
+.region.top.left .weathericon .svg-ico.cloudy-windy svg,
+.region.top.left .weathericon .svg-ico.day-sunny svg,
+.region.top.left .weathericon .svg-ico.mist svg,
+.region.top.left .weathericon .svg-ico.night-clear svg,
+.region.top.left .weathericon .svg-ico.night-rain svg,
+.region.top.left .weathericon .svg-ico.partly-sun svg,
+.region.top.left .weathericon .svg-ico.rain svg,
+.region.top.left .weathericon .svg-ico.snow svg,
+.region.top.left .weathericon .svg-ico.sun-rain svg,
+.region.top.left .weathericon .svg-ico.thunder svg {
+	width: var(--wx-icon-size) !important;
+	height: auto !important;
+}
+
+/* 右欄已不用（鏡頭改第三頁） */
+.region.top.right {
+	display: none !important;
+}
+
+.region.middle.center {
+	top: 0 !important;
+	bottom: 0 !important;
+	left: var(--col-time) !important;
+	right: 0 !important;
+	width: auto !important;
+	height: auto !important;
+	max-height: none !important;
+	transform: none !important;
+	overflow: hidden;
+	text-align: left;
+	z-index: 2;
+}
+
+.region.middle.center .container {
+	position: relative;
+	height: 100%;
+	display: grid;
+	/* bus | (dht?) | holidays | personal | media | controls */
+	grid-template-columns: var(--col-bus) max-content minmax(0, 1fr) var(--col-media) var(--col-controls);
+	/* 上兩列貼內容高度，避免到站／通知之間被日曆撐出空隙 */
+	grid-template-rows: max-content max-content minmax(0, 1fr);
+	align-items: stretch;
+	column-gap: var(--col-gap);
+	row-gap: 0;
+	overflow: hidden;
+	padding: var(--panel-inset);
+	box-sizing: border-box;
+}
+
+/* DHT 有接駁時：在行事曆左側插入直欄 */
+.region.middle.center .container:has(.module.mmm-dht11:not(.hidden)) {
+	grid-template-columns: var(--col-bus) max-content max-content minmax(0, 1fr) var(--col-media) var(--col-controls);
+}
+
+body:has(.module.page2:not(.hidden)) .region.middle.center .container,
+body:has(.module.page3:not(.hidden)) .region.middle.center .container {
+	padding: 0;
+	gap: 0;
+	display: flex;
+}
+
+.region.middle.center .module {
+	margin: 0 !important;
+	min-width: 0;
+	min-height: 0;
+	overflow: hidden;
+}
+
+/* 鏡頭／影集頁：中欄滿寬，左欄藏起 */
+body:has(.module.page2:not(.hidden)) .region.top.left,
+body:has(.module.page3:not(.hidden)) .region.top.left {
+	display: none !important;
+}
+
+body:has(.module.page2:not(.hidden)) .region.middle.center,
+body:has(.module.page3:not(.hidden)) .region.middle.center {
+	left: 0 !important;
+	right: 0 !important;
+}
+
+/* ========== 到站（上）＋通知區域（交通紅上／天氣黃下）／ calendar ========== */
+
+.region.middle.center .module.kmb-eta {
+	grid-column: 1;
+	grid-row: 1;
+	align-self: stretch;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	padding: 0 var(--module-pad-x) 0 0;
+	box-sizing: border-box;
+	min-height: 0;
+}
+
+/* 無任何通知時：到站大字佔滿左欄 */
+.region.middle.center .container:not(:has(.notifications:not(.hidden))) .kmb-eta {
+	grid-row: 1 / -1;
+	align-self: stretch;
+	height: 100%;
+	justify-content: center;
+}
+
+.region.middle.center .container:not(:has(.notifications:not(.hidden))) .kmb-eta .module-content {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.region.middle.center .container:not(:has(.notifications:not(.hidden))) .kmb-eta table,
+.region.middle.center .container:not(:has(.notifications:not(.hidden))) .kmb-eta tbody {
+	height: 100%;
+	align-items: center;
+}
+
+.region.middle.center .container:not(:has(.notifications:not(.hidden))) .kmb-eta td.align-left.bright {
+	font-size: 1.7rem;
+}
+
+.region.middle.center .container:not(:has(.notifications:not(.hidden))) .kmb-eta .eta-t {
+	font-size: 1.25rem;
+}
+
+.region.middle.center .container:not(:has(.notifications:not(.hidden))) .kmb-eta .eta-t.is-next {
+	font-size: 2.15rem;
+}
+
+.module.kmb-eta .module-content {
+	width: 100%;
+}
+
+/* 268X｜276P；每線下一班大字、第二班在下方 */
+.module.kmb-eta table,
+.module.kmb-eta tbody {
+	width: 100%;
+	display: flex !important;
+	flex-direction: row !important;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 10px;
+	border-collapse: separate;
+	border-spacing: 0;
+}
+
+.MMM-HK-Transport-ETA thead,
+.module.kmb-eta thead,
+.MMM-HK-Transport-ETA tr.normal.header,
+.module.kmb-eta tr.normal.header {
+	display: none;
+}
+
+.module.kmb-eta tr {
+	display: flex !important;
+	flex: 1 1 0;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+	padding: 0 !important;
+	border: none !important;
+	min-width: 0;
+}
+
+.module.kmb-eta td {
+	display: block !important;
+	width: 100% !important;
+	padding: 0 !important;
+	border: none !important;
+	text-align: center !important;
+}
+
+.module.kmb-eta td.align-left.bright {
+	font-size: 1.35rem;
+	font-weight: 700;
+	letter-spacing: -0.03em;
+	line-height: 1.1;
+	color: var(--text-primary);
+	margin-bottom: 4px;
+}
+
+.module.kmb-eta .eta-times {
+	display: flex !important;
+	flex-direction: column !important;
+	align-items: center !important;
+	justify-content: flex-start !important;
+	gap: 2px !important;
+	width: 100% !important;
+}
+
+.module.kmb-eta .eta-t {
+	display: block !important;
+	width: 100%;
+	text-align: center;
+	font-size: 0.95rem;
+	font-weight: 500;
+	font-variant-numeric: tabular-nums;
+	color: var(--text-secondary);
+	line-height: 1.2;
+}
+
+.module.kmb-eta .eta-t.is-next {
+	font-size: 1.45rem;
+	font-weight: 600;
+	color: var(--accent);
+	letter-spacing: -0.02em;
+}
+
+.MMM-HK-Transport-ETA .dimmed,
+.module.kmb-eta .dimmed {
+	font-size: 0.8rem;
+	color: var(--text-tertiary);
+}
+
+/* 通知區域：交通（列2・紅）／天氣（列3・黃） */
+.region.middle.center .module.notifications {
+	grid-column: 1;
+	align-self: stretch;
+	display: flex !important;
+	flex-direction: column;
+	justify-content: stretch;
+	padding: 6px var(--module-pad-x) 0 0;
+	box-sizing: border-box;
+	overflow: hidden;
+	min-height: 0;
+}
+
+.region.middle.center .module.notifications.td-traffic {
+	grid-row: 2;
+}
+
+.region.middle.center .module.notifications.hko-weather {
+	grid-row: 3;
+}
+
+.module.notifications .module-content {
+	flex: 1 1 auto !important;
+	min-height: 0;
+	display: flex !important;
+	flex-direction: column;
+}
+
+.module.notifications .mmm-hko-swt,
+.module.notifications .mmm-td-traffic,
+.module.notifications .mmm-hko-swt-list,
+.module.notifications .mmm-td-traffic-list {
+	flex: 1 1 auto;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+.module.notifications .mmm-hko-swt-list,
+.module.notifications .mmm-td-traffic-list {
+	gap: 6px;
+	align-items: stretch;
+	justify-content: flex-start;
+}
+
+.module.notifications .mmm-hko-swt-item,
+.module.notifications .mmm-td-traffic-item {
+	flex: 0 0 auto;
+	overflow: hidden;
+	padding: 3px 0 3px 8px;
+	border: none;
+	box-sizing: border-box;
+	text-align: left;
+}
+
+.module.notifications.hko-weather .mmm-hko-swt-item {
+	border-left: 3px solid var(--warning);
+}
+
+.module.notifications.td-traffic .mmm-td-traffic-item {
+	border-left: 3px solid var(--danger);
+}
+
+.module.notifications .mmm-hko-swt-text,
+.module.notifications .mmm-td-traffic-text {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	width: 100%;
+	font-size: 0.92rem;
+	font-weight: 500;
+	line-height: 1.25;
+}
+
+.module.notifications.hko-weather .mmm-hko-swt-text {
+	color: var(--warning);
+}
+
+.module.notifications.td-traffic .mmm-td-traffic-text {
+	color: var(--danger);
+}
+
+.region.middle.center .module.mmm-dht11 {
+	/* 行事曆區塊左側、靠上 */
+	grid-column: 2;
+	grid-row: 1;
+	align-self: start;
+	flex: 0 0 auto;
+	min-width: 56px;
+	max-width: 72px;
+	height: auto;
+	max-height: none;
+	justify-content: flex-start;
+	display: flex;
+	flex-direction: column;
+	padding: 0 4px 0 0;
+	box-sizing: border-box;
+}
+
+.region.middle.center .module.calendar-holidays {
+	grid-column: 2;
+	grid-row: 1 / -1;
+	flex: 0 0 auto;
+	max-width: 148px;
+	justify-content: center;
+	display: flex;
+	flex-direction: column;
+	padding: 0 var(--module-pad-x) 0 0;
+	box-sizing: border-box;
+}
+
+.region.middle.center .container:has(.module.mmm-dht11:not(.hidden)) .module.calendar-holidays {
+	grid-column: 3;
+}
+
+.region.middle.center .module.calendar-holidays header {
+	color: var(--danger);
+	margin-bottom: 4px;
+}
+
+.region.middle.center .module.calendar-holidays .title {
+	color: var(--danger) !important;
+	font-size: 0.95rem;
+	font-weight: 600;
+}
+
+.region.middle.center .module.calendar-holidays .time {
+	color: var(--text-secondary);
+	font-size: 0.82rem;
+}
+
+.region.middle.center .module.calendar-personal {
+	grid-column: 3;
+	grid-row: 1 / -1;
+	min-width: 220px;
+	height: auto;
+	max-height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	overflow: hidden;
+	padding: 0 var(--module-pad-x);
+	box-sizing: border-box;
+}
+
+.region.middle.center .container:has(.module.mmm-dht11:not(.hidden)) .module.calendar-personal {
+	grid-column: 4;
+}
+
+.region.middle.center .module.calendar-personal .module-content {
+	flex: 1 1 auto;
+	min-height: 0;
+	overflow-x: hidden;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+.calendar table {
+	width: 100%;
+	table-layout: fixed;
+	border-spacing: 0;
+	border-collapse: collapse;
+}
+
+/* dateheaders：隱藏 displaySymbol=false 時的空白第一欄 */
+.module.calendar-personal .event > td:first-child:not(.title):not(.time):not(.symbol) {
+	display: none;
+	width: 0;
+	padding: 0 !important;
+}
+
+.calendar .dateheader td {
+	padding: 5px 0 2px !important;
+	font-size: 0.74rem;
+	font-weight: 600;
+	letter-spacing: 0.01em;
+	color: var(--text-secondary);
+	line-height: 1.15;
+	border: none !important;
+}
+
+.calendar .dateheader:first-child td {
+	padding-top: 0 !important;
+}
+
+.calendar .dateheader.today td {
+	color: var(--accent);
+}
+
+.calendar .dateheader.tomorrow td {
+	color: var(--cool);
+}
+
+.calendar .event {
+	border-style: none none none solid !important;
+	border-width: 0 0 0 3px !important;
+	border-color: var(--accent);
+}
+
+.calendar .event:last-child {
+	margin-bottom: 0;
+}
+
+.calendar .event td {
+	padding-top: 2px !important;
+	padding-bottom: 2px !important;
+	line-height: 1.2;
+	vertical-align: middle;
+}
+
+.calendar .title {
+	padding: 0 6px 0 8px !important;
+	white-space: nowrap !important;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	color: var(--text-primary) !important;
+	font-weight: 500;
+	font-size: 0.98rem;
+	text-align: left !important;
+}
+
+.calendar .time {
+	width: auto;
+	min-width: 3.8em;
+	padding: 0 0 0 6px !important;
+	text-align: right !important;
+	color: var(--text-secondary) !important;
+	font-size: 0.78rem;
+	font-variant-numeric: tabular-nums;
+	font-weight: 500;
+	white-space: nowrap !important;
+}
+
+/* 全日活動：標題佔滿 */
+.calendar .title.align-left {
+	width: auto;
+}
+
+/* ========== Media（右欄 Now Playing 直卡） ========== */
+
+.region.middle.center .module.ha-media,
+.region.middle.center .module.ha-controls {
+	grid-row: 1 / -1;
+	align-self: stretch;
+	display: flex;
+	flex-direction: column;
+	height: auto;
+	max-height: 100%;
+	min-height: 0;
+	margin: 0 !important;
+	box-sizing: border-box;
+}
+
+.region.middle.center .module.ha-media {
+	grid-column: 4;
+	position: relative;
+	flex: 0 0 var(--col-media);
+	max-width: var(--col-media);
+	padding: 0 var(--module-pad-x);
+}
+
+.region.middle.center .container:has(.module.mmm-dht11:not(.hidden)) .module.ha-media {
+	grid-column: 5;
+}
+
 .module.ha-media:not(:has(.ha-media-card:not(.ha-media-hidden))) {
 	display: none !important;
 }
 
 .module.ha-media .ha-media-card {
 	position: relative;
+	flex: 1 1 auto;
+	height: 100%;
+	min-height: 0;
 	overflow: hidden;
-	width: 100%;
-	min-height: 220px;
-	height: auto;
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
-	border: 1px solid rgba(255, 255, 255, 0.1);
-	border-radius: 12px;
-	background: rgba(255, 255, 255, 0.04);
+	border-radius: var(--radius-lg);
+	border: 1px solid var(--border-muted);
+	background: var(--bg-secondary);
+	display: flex;
+	flex-direction: column;
+	box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
 }
 
 .module.ha-media .ha-media-card.ha-media-hidden {
@@ -472,31 +861,33 @@
 }
 
 .module.ha-media .ha-media-card.paused {
-	opacity: 0.8;
+	opacity: 0.9;
 }
 
 .module.ha-media .ha-media-art-wrap {
 	position: absolute;
 	inset: 0;
-	background: rgba(255, 255, 255, 0.04);
+	flex: 1 1 auto;
+	background: #141416;
 }
 
 .module.ha-media .ha-media-art-img {
 	width: 100%;
 	height: 100%;
 	object-fit: cover;
-	display: block;
-	opacity: 0.78;
+	opacity: 0.88;
 }
 
 .module.ha-media .ha-media-art-placeholder {
 	width: 100%;
 	height: 100%;
 	display: flex;
-	align-items: center;
+	align-items: flex-start;
 	justify-content: center;
-	font-size: 3.5em;
-	color: rgba(255, 255, 255, 0.12);
+	padding-top: 28%;
+	box-sizing: border-box;
+	font-size: 2.6rem;
+	color: rgba(120, 120, 128, 0.45);
 }
 
 .module.ha-media .ha-media-art-overlay {
@@ -504,439 +895,1075 @@
 	inset: 0;
 	background: linear-gradient(
 		to bottom,
-		rgba(0, 0, 0, 0.1) 0%,
-		rgba(0, 0, 0, 0.55) 50%,
-		rgba(0, 0, 0, 0.9) 100%
+		var(--fill-press) 0%,
+		rgba(0, 0, 0, 0.12) 28%,
+		rgba(0, 0, 0, 0.2) 48%,
+		rgba(0, 0, 0, 0.88) 78%,
+		rgba(0, 0, 0, 0.96) 100%
 	);
 }
 
 .module.ha-media .ha-media-card-body {
 	position: relative;
 	z-index: 1;
+	height: 100%;
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-end;
-	align-items: center;
-	min-height: 220px;
-	padding: 16px 14px 14px;
-	gap: 4px;
-	text-align: center;
+	align-items: stretch;
+	padding: 10px 12px 12px;
+	gap: 3px;
+	box-sizing: border-box;
+	text-align: left;
 }
 
+/* 裝置名頂部；標題／來源／進度貼底，中間留給封面 */
 .module.ha-media .ha-media-device-label {
-	font-size: 0.63em;
+	margin-bottom: auto;
+	padding-right: 56px;
+	font-size: 0.68rem;
 	font-weight: 600;
+	letter-spacing: 0.06em;
 	text-transform: uppercase;
-	letter-spacing: 0.1em;
-	color: rgba(255, 255, 255, 0.38);
-	margin-bottom: 4px;
-	width: 100%;
+	color: rgba(245, 245, 247, 0.72);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .module.ha-media .ha-media-title {
-	font-size: 1.12em;
-	font-weight: 700;
-	color: #fff;
-	white-space: nowrap;
+	font-size: 1.05rem;
+	font-weight: 600;
+	letter-spacing: -0.02em;
+	line-height: 1.2;
+	color: var(--text-primary);
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 1;
 	overflow: hidden;
-	text-overflow: ellipsis;
-	width: 100%;
+	white-space: normal;
+	word-break: break-word;
 }
 
 .module.ha-media .ha-media-sub {
-	font-size: 0.85em;
-	color: rgba(255, 255, 255, 0.65);
+	font-size: 0.82rem;
+	line-height: 1.25;
+	color: var(--text-secondary);
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	width: 100%;
-	margin-bottom: 4px;
 }
 
 .module.ha-media .ha-media-progress {
-	width: 100%;
-	margin: 2px 0 8px;
+	margin: 6px 0 0;
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
 }
 
 .module.ha-media .ha-media-progress.ha-media-hidden {
 	display: none;
 }
 
+/* 小卡進度亦可點／拖 seek */
 .module.ha-media .ha-media-progress-track {
 	position: relative;
-	width: 100%;
 	height: 4px;
-	border-radius: 2px;
-	background: rgba(255, 255, 255, 0.22);
-	overflow: hidden;
+	border-radius: var(--radius-pill);
+	background: var(--border-muted);
+	overflow: visible;
+	cursor: pointer;
+	touch-action: none;
 }
 
 .module.ha-media .ha-media-progress-fill {
+	position: relative;
 	height: 100%;
-	width: 0%;
-	border-radius: 2px;
-	background: rgba(255, 255, 255, 0.9);
-	transition: width 0.35s linear;
+	border-radius: inherit;
+	background: var(--text-primary);
+}
+
+.module.ha-media .ha-media-progress-fill::after {
+	content: "";
+	position: absolute;
+	right: 0;
+	top: 50%;
+	transform: translate(50%, -50%);
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: var(--text-primary);
+	pointer-events: none;
 }
 
 .module.ha-media .ha-media-progress-times {
 	display: flex;
 	justify-content: space-between;
-	margin-top: 4px;
-	font-size: 0.62em;
-	line-height: 1;
-	color: rgba(255, 255, 255, 0.55);
+	font-size: 0.68rem;
 	font-variant-numeric: tabular-nums;
+	color: var(--text-tertiary);
 }
 
+/* 小卡也顯示：上一首／播放暫停／下一首 */
 .module.ha-media .ha-media-controls {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	width: auto;
-	height: auto;
-	margin: 0;
 	gap: 10px;
-	border-radius: 0;
-	background: transparent;
+	width: 100%;
+	margin: 6px 0 0;
+	padding: 0;
+	box-sizing: border-box;
 }
 
 .module.ha-media .ha-media-btn {
 	appearance: none;
-	border: none;
-	background: rgba(255, 255, 255, 0.1);
-	color: #fff;
-	width: 2.4rem;
-	height: 2.4rem;
-	border-radius: 50%;
+	-webkit-appearance: none;
+	flex: 0 0 auto;
+	width: 36px;
+	height: 36px;
+	margin: 0;
 	padding: 0;
-	display: flex;
+	border: 1px solid var(--border-subtle);
+	border-radius: 50%;
+	background: var(--fill-press);
+	color: var(--text-primary);
+	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	touch-action: manipulation;
 	cursor: pointer;
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+	transition: transform 0.15s var(--ease-apple), border-color 0.2s var(--ease-apple), background 0.2s var(--ease-apple);
 }
 
 .module.ha-media .ha-media-btn-primary {
-	width: 3rem;
-	height: 3rem;
-	background: rgba(255, 255, 255, 0.22);
+	width: 42px;
+	height: 42px;
+	border-color: rgba(255, 255, 255, 0.5);
+	background: rgba(255, 255, 255, 0.12);
 }
 
 .module.ha-media .ha-media-btn:active {
-	transform: scale(0.92);
-	background: rgba(88, 166, 255, 0.45);
+	transform: scale(0.94);
+	border-color: rgba(255, 255, 255, 0.65);
+	background: rgba(255, 255, 255, 0.2);
 }
 
 .module.ha-media .ha-media-btn i {
-	font-size: 0.85rem;
+	font-size: 0.78rem;
 	pointer-events: none;
+	line-height: 1;
 }
 
 .module.ha-media .ha-media-btn-primary i {
-	font-size: 1rem;
+	font-size: 0.92rem;
 }
 
-/* Keep bedroom switch grid using .ha-touch-root too */
-.module.MMM-HomeAssistant-Touch:not(.ha-media) .ha-touch-root {
+.region.middle.center .module.ha-media .mmm-playerfocus-host {
+	top: 10px;
+	right: 10px;
+}
+
+.region.middle.center .module.MMM-PlayerFocus {
+	grid-column: 4;
+}
+
+.region.middle.center .container:has(.module.mmm-dht11:not(.hidden)) .module.MMM-PlayerFocus {
+	grid-column: 5;
+	grid-row: 1;
+	flex: 0 0 0;
+	width: 0;
+	height: 0;
+	overflow: visible;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: none;
+	background: transparent;
+}
+
+.region.middle.center .module.MMM-PlayerFocus .mmm-playerfocus-host {
+	pointer-events: auto;
+}
+
+.mmm-playerfocus-btn {
+	min-width: var(--touch-min);
+	min-height: 30px;
+	padding: 5px 11px;
+	border: 1px solid var(--border-subtle);
+	border-radius: var(--radius-pill);
+	background: rgba(0, 0, 0, 0.45);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	color: var(--text-primary);
+	font-size: 0.68rem;
+	font-weight: 600;
+}
+
+/* ========== Page 2 鏡頭（滿頁雙鏡頭） ========== */
+
+.region.middle.center .module.page2.MMM-UniFiProtect,
+.region.middle.center .module.MMM-UniFiProtect.page2,
+.region.middle.center .module.page3 {
+	flex: 1 1 auto;
+	width: 100%;
+	height: 100%;
+	grid-column: 1 / -1;
+	grid-row: 1 / -1;
+}
+
+.region.middle.center .module.page2.MMM-UniFiProtect,
+.region.middle.center .module.MMM-UniFiProtect.page2 {
+	padding: 0;
+}
+
+.module.page2 .mmm-unifiprotect-grid {
+	gap: 4px;
+}
+
+/* 手勢交給 PageSwipe：影音層不攔截觸控 */
+.module.page2 :is(.mmm-unifiprotect-native-live, .mmm-unifiprotect-snapshot, .mmm-unifiprotect-stream, video, iframe, canvas) {
+	pointer-events: none !important;
+	touch-action: none;
+}
+
+/* ========== Cameras（共用） ========== */
+
+.MMM-UniFiProtect,
+.module.MMM-UniFiProtect {
+	width: 100%;
+	height: 100%;
+	padding: 0;
+}
+
+.MMM-UniFiProtect .mmm-unifiprotect-label {
+	display: none !important;
+}
+
+.MMM-UniFiProtect .mmm-unifiprotect {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.MMM-UniFiProtect .mmm-unifiprotect-grid {
+	display: flex;
+	flex-direction: row;
+	flex: 1 1 auto;
+	min-height: 0;
+	height: 100%;
+	gap: 2px;
+}
+
+.MMM-UniFiProtect .mmm-unifiprotect-cell {
+	flex: 1 1 0;
+	min-width: 0;
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+}
+
+.MMM-UniFiProtect :is(.mmm-unifiprotect-native-live, .mmm-unifiprotect-snapshot, .mmm-unifiprotect-stream),
+.MMM-UniFiProtect.compact :is(.mmm-unifiprotect-native-live, .mmm-unifiprotect-snapshot, .mmm-unifiprotect-stream) {
+	width: 100% !important;
+	height: 100% !important;
+	flex: 1 1 auto;
+	min-height: 0;
+	object-fit: cover;
+	border-radius: 0;
+	border: none;
+	aspect-ratio: auto;
+}
+
+/* ========== Page 0 控制（最右單色列表） ========== */
+
+.region.middle.center .module.ha-controls {
+	grid-column: 5;
+	flex: 0 0 var(--col-controls);
+	max-width: var(--col-controls);
+	padding: 0 0 0 var(--module-pad-x);
+	overflow: hidden;
+}
+
+.region.middle.center .container:has(.module.mmm-dht11:not(.hidden)) .module.ha-controls {
+	grid-column: 6;
+}
+
+.module.ha-media .module-content,
+.module.ha-media .ha-touch-root,
+.module.ha-controls .module-content,
+.module.ha-controls .ha-touch-root {
+	flex: 1 1 auto;
+	min-height: 0;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+.module.ha-media .module-content,
+.module.ha-media .ha-touch-root {
+	gap: 0;
+}
+
+.module.ha-controls .module-content,
+.module.ha-controls .ha-touch-root {
+	justify-content: space-between;
+	gap: 4px;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+.module.ha-controls .ha-entity {
+	margin: 0;
+	min-width: 0;
+	box-sizing: border-box;
+}
+
+/* 共用：黑底細白邊圓角列 */
+.module.ha-controls .ha-btn,
+.module.ha-controls .ha-climate-card {
+	border-radius: 12px;
+	border: 1px solid var(--border-card);
+	background: var(--bg-primary);
+	color: var(--text-primary);
+	box-shadow: none;
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
+	touch-action: manipulation;
+	transition:
+		transform 0.15s var(--ease-apple),
+		border-color 0.2s var(--ease-apple),
+		background 0.2s var(--ease-apple);
+}
+
+.module.ha-controls .ha-btn:active,
+.module.ha-controls .ha-climate-btn:active {
+	transform: scale(0.98);
+}
+
+.module.ha-controls .ha-btn.on,
+.module.ha-controls .ha-climate-card.on {
+	border-color: var(--border-on);
+	background: #0a0a0a;
+}
+
+/* —— 冷氣 —— */
+.module.ha-controls .ha-climate-card {
+	flex: 0 0 auto;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	padding: 6px 8px 7px;
+}
+
+.module.ha-controls .ha-climate-head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 6px;
+}
+
+.module.ha-controls .ha-climate-title {
+	font-size: 0.78rem;
+	font-weight: 600;
+	color: var(--text-primary);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.module.ha-controls .ha-climate-mode {
+	flex: 0 0 auto;
+	font-size: 0.62rem;
+	font-weight: 600;
+	color: var(--text-secondary);
+}
+
+.module.ha-controls .ha-climate-card.off .ha-climate-mode {
+	color: var(--text-tertiary);
+}
+
+.module.ha-controls .ha-climate-temps {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+.module.ha-controls .ha-climate-temps .num {
+	font-size: 1.15rem;
+	font-weight: 600;
+	line-height: 1;
+	font-variant-numeric: tabular-nums;
+	letter-spacing: -0.03em;
+	color: var(--text-primary);
+}
+
+.module.ha-controls .ha-climate-temps .unit {
+	display: inline;
+	margin-left: 2px;
+	font-size: 0.55rem;
+	font-weight: 500;
+	color: var(--text-tertiary);
+}
+
+.module.ha-controls .ha-climate-controls {
 	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 10px;
-	width: 100%;
-	box-sizing: border-box;
-	padding: 2px 0 8px;
+	grid-template-columns: 1fr 1.4fr 1fr;
+	gap: 4px;
 }
 
-
-
-
-.weather .wi {
-	font-size: 1.15em;
-}
-
-.weather .temperature,
-.weather .current-temp {
-	font-size: var(--font-size-large);
-}
-
-/* Calendar: single-line rows for 320px width */
-.calendar table {
-	width: 100%;
-	table-layout: fixed;
-	border-spacing: 0;
-}
-
-.calendar .event td {
-	vertical-align: middle;
-	padding-top: 1px;
-	padding-bottom: 1px;
-	line-height: 1.25;
-}
-
-.calendar .title {
-	padding: 0 4px 0 0 !important;
-	white-space: nowrap !important;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	width: 62%;
-}
-
-.calendar .time {
-	padding-left: 4px !important;
-	white-space: nowrap !important;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	text-align: right;
-	width: 38%;
-	opacity: 0.9;
-}
-
-.calendar,
-.calendar .xsmall,
-.calendar .small {
-	font-size: var(--font-size-small);
-}
-
-.newsfeed {
-	font-size: var(--font-size-small);
-}
-
-.newsfeed .bright {
-	font-size: var(--font-size-medium);
-}
-
-/* Compliments: don't dominate the tall middle */
-.compliments {
+.module.ha-controls .ha-climate-btn {
+	min-height: 28px;
 	padding: 0 4px;
+	border-radius: 8px;
+	border: 1px solid var(--border-card);
+	background: var(--bg-primary);
+	color: var(--text-primary);
+	font-size: 0.72rem;
+	font-weight: 600;
+	line-height: 1;
+	box-shadow: none;
 }
 
-.compliments .compliment {
-	font-size: var(--font-size-medium) !important;
-	line-height: 1.3;
-	word-wrap: break-word;
-	overflow-wrap: anywhere;
+.module.ha-controls .ha-climate-step {
+	font-size: 1.05rem;
 }
 
-/* News: wrap long headlines */
-.newsfeed,
-.newsfeed .newsfeed-title,
-.newsfeed .small {
-	white-space: normal !important;
-	word-wrap: break-word;
-	overflow-wrap: anywhere;
-	line-height: 1.3;
-	text-align: center;
-	padding: 0 2px;
+.module.ha-controls .ha-climate-power {
+	font-size: 0.7rem;
 }
 
-.no-wrap {
-	white-space: normal;
-	text-overflow: clip;
+/* —— 燈／開關：圖示｜名稱 …… 狀態 —— */
+.module.ha-controls .ha-entity.ha-btn {
+	flex: 1 1 0;
+	min-height: 42px;
+	max-height: none;
+	height: auto;
+	display: grid;
+	grid-template-columns: 22px minmax(0, 1fr) auto;
+	align-items: center;
+	column-gap: 8px;
+	padding: 0 10px;
 }
 
-/* MMM-OnSpotify: fit 320px portrait strip */
-.MMM-OnSpotify,
-[class*="OnSpotify"] {
-	max-width: 100%;
-	overflow: hidden;
-	font-size: var(--font-size-small);
+/* 燈光（含可調光）：一律直向，內層用 ha-light-top */
+.module.ha-controls .ha-entity.ha-btn.ha-light {
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: center;
+	gap: 2px;
+	min-height: 42px;
+	padding: 6px 10px;
 }
 
-/* MMM-NowPlaying — Nest/Chromecast now-playing on 320px strip */
-.MMM-NowPlaying,
-.module.MMM-NowPlaying {
+.module.ha-controls .ha-entity.ha-btn.ha-light-dimmable {
+	min-height: 54px;
+	padding: 6px 10px 7px;
+}
+
+.module.ha-controls .ha-light-top {
+	display: grid;
+	grid-template-columns: 22px minmax(0, 1fr);
+	align-items: center;
+	column-gap: 8px;
 	width: 100%;
-	max-width: 100%;
-	margin: 4px 0;
+	min-width: 0;
 }
 
-.MMM-NowPlaying * {
-	max-width: 100%;
+.module.ha-controls .ha-icon {
+	grid-column: 1;
+	width: 22px;
+	height: 22px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: none;
+	border-radius: 0;
+	background: transparent;
+	font-size: 0.85rem;
+	color: var(--text-primary);
+	filter: none;
+}
+
+.module.ha-controls .ha-light-meta {
+	grid-column: 2;
+	min-width: 0;
+	display: flex;
+	flex-direction: row;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 6px;
+}
+
+.module.ha-controls .ha-btn > .title,
+.module.ha-controls .ha-light-meta .title {
+	min-width: 0;
+	font-size: 0.8rem;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-align: left;
+	color: var(--text-primary);
+}
+
+.module.ha-controls .ha-btn > .title {
+	grid-column: 2;
+}
+
+.module.ha-controls .ha-light-meta .title {
+	flex: 1 1 auto;
+}
+
+.module.ha-controls .ha-btn > .status,
+.module.ha-controls .ha-light-meta .status {
+	flex: 0 0 auto;
+	font-size: 0.68rem;
+	font-weight: 500;
+	text-align: right;
+	white-space: nowrap;
+	width: auto;
+}
+
+.module.ha-controls .ha-btn > .status {
+	grid-column: 3;
+	color: var(--text-tertiary);
+}
+
+.module.ha-controls .ha-light-meta .status {
+	color: var(--text-secondary);
+}
+
+.module.ha-controls .ha-btn.on > .status,
+.module.ha-controls .ha-btn.on .ha-light-meta .status {
+	color: var(--text-secondary);
+}
+
+.module.ha-controls .ha-brightness-row {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	padding: 0;
 	box-sizing: border-box;
 }
 
-/* MMM-Sonarr — fit 320px portrait strip; page 2 sits in top_bar */
-.MMM-Sonarr,
-.module.MMM-Sonarr {
+.module.ha-controls .ha-brightness-slider {
+	display: block;
 	width: 100%;
-	max-width: 100%;
-	text-align: left;
+	height: 16px;
+	margin: 0;
+	padding: 0;
+	accent-color: var(--text-primary);
+	background: transparent;
+	cursor: pointer;
+	touch-action: none;
+	-webkit-appearance: none;
+	appearance: none;
 }
 
-.region.top.bar .module.MMM-Sonarr {
-	margin-top: 0;
+.module.ha-controls .ha-brightness-slider::-webkit-slider-runnable-track,
+.module.ha-controls .ha-brightness-slider::-moz-range-track {
+	height: 2px;
+	border-radius: var(--radius-pill);
+	background: var(--border-subtle);
+}
+
+.module.ha-controls .ha-brightness-slider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 12px;
+	height: 12px;
+	margin-top: -5px;
+	border-radius: 50%;
+	border: none;
+	background: var(--text-primary);
+}
+
+.module.ha-controls .ha-brightness-slider::-moz-range-thumb {
+	width: 12px;
+	height: 12px;
+	border: none;
+	border-radius: 50%;
+	background: var(--text-primary);
+}
+
+.module.ha-controls .ha-light-dimmable {
+	cursor: default;
+}
+
+/* ========== Page 3 影集 ========== */
+
+.region.middle.center .module.page3 {
+	overflow: auto;
+	text-align: left;
+	padding: var(--panel-inset);
+	box-sizing: border-box;
+}
+
+.module.page3 > header {
+	font-size: 1.35rem;
+	font-weight: 600;
+	color: var(--text-primary);
+	margin-bottom: var(--space-md);
 }
 
 .MMM-Sonarr .sonarr-wrapper {
-	font-size: var(--font-size-xsmall);
-	line-height: 1.3;
+	font-size: 1rem;
+	line-height: 1.4;
+	color: var(--text-secondary);
 }
 
 .MMM-Sonarr .sonarr-section {
-	margin-bottom: 10px;
+	margin-bottom: var(--space-md);
+	padding: 0;
+	border: none;
+	background: transparent;
 }
 
 .MMM-Sonarr .sonarr-section h2 {
-	font-size: var(--font-size-small);
-	margin: 0 0 6px;
-	opacity: 0.85;
+	font-size: 0.85rem;
+	font-weight: 600;
+	color: var(--text-secondary);
+	margin: 0 0 var(--space-sm);
 }
 
 .MMM-Sonarr .sonarr-section li {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-	margin-bottom: 3px;
+	padding: 6px 0;
+	color: var(--text-primary);
+	font-size: 1rem;
 }
 
-/* UniFi Protect — two cameras stacked, full panel width */
-.MMM-UniFiProtect,
-.module.MMM-UniFiProtect {
-	width: 100%;
-	max-width: 100%;
-	padding: 0;
+/* ========== Player focus 全覽（橫向 Now Playing） ========== */
+
+body.player-focus {
+	background: var(--bg-primary) !important;
+	--focus-art-width: var(--panel-height);
+	--focus-brightness-col: 68px; /* right 10 + width 48 + gap */
+	--focus-content-max: 560px;
 }
 
-.MMM-UniFiProtect .mmm-unifiprotect,
-.MMM-UniFiProtect .mmm-unifiprotect-grid,
-.MMM-UniFiProtect .mmm-unifiprotect-cell {
-	width: 100%;
-	max-width: 100%;
-	min-width: 0;
-	box-sizing: border-box;
-}
-
-.MMM-UniFiProtect .mmm-unifiprotect-grid {
-	display: flex;
-	flex-direction: column;
-	flex-wrap: nowrap;
-	gap: 6px;
-}
-
-.MMM-UniFiProtect .mmm-unifiprotect-label {
-	font-size: 0.7rem;
-	margin: 0;
-	line-height: 1.1;
-}
-
-.MMM-UniFiProtect .mmm-unifiprotect-native-live,
-.MMM-UniFiProtect .mmm-unifiprotect-snapshot,
-.MMM-UniFiProtect .mmm-unifiprotect-stream,
-.MMM-UniFiProtect.compact .mmm-unifiprotect-native-live,
-.MMM-UniFiProtect.compact .mmm-unifiprotect-snapshot,
-.MMM-UniFiProtect.compact .mmm-unifiprotect-stream {
-	width: 100% !important;
-	max-width: 100% !important;
-	height: auto !important;
-	aspect-ratio: 16 / 9;
-	object-fit: cover;
-	border-radius: 0;
-}
-
-/* Player focus（點「全覽」）：只顯示播放器，橫向滿版覆蓋 */
-body.player-focus .module:not(.ha-media) {
+body.player-focus .module:not(.ha-media),
+body.player-focus .region.middle.center .module:not(.ha-media),
+body.player-focus .region.top.left,
+body.player-focus .region.top.right {
 	display: none !important;
+	visibility: hidden !important;
+	pointer-events: none !important;
 }
 
-body.player-focus .region:not(.upper.third) {
-	pointer-events: none;
-}
-
-body.player-focus .region.upper.third {
-	position: fixed !important;
-	inset: 0;
-	top: 0 !important;
-	left: 0 !important;
-	right: 0 !important;
+body.player-focus .region.middle.center {
+	position: absolute !important;
+	inset: 0 !important;
 	width: 100% !important;
-	max-width: 100% !important;
+	height: 100% !important;
+	max-height: none !important;
 	transform: none !important;
-	display: flex !important;
-	flex-direction: column;
-	align-items: stretch;
-	justify-content: center;
 	z-index: 9000;
-	pointer-events: none;
-	background: #000;
+	background: var(--bg-primary) !important;
+	overflow: hidden;
+	pointer-events: auto;
+}
+
+body.player-focus .region.middle.center .container {
+	display: flex !important;
+	flex-direction: row;
+	align-items: stretch;
+	justify-content: stretch;
+	height: 100%;
+	width: 100%;
 	padding: 0 !important;
 	margin: 0 !important;
+	gap: 0 !important;
+	grid-template-columns: none !important;
+	grid-template-rows: none !important;
 }
 
 body.player-focus .module.ha-media {
 	position: relative !important;
-	left: 0 !important;
-	right: 0 !important;
-	top: auto !important;
-	transform: none !important;
+	flex: 1 1 auto !important;
+	max-width: none !important;
+	width: 100% !important;
+	height: 100% !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	grid-column: auto !important;
+	grid-row: auto !important;
+	display: flex !important;
+	flex-direction: column;
 	opacity: 1 !important;
 	visibility: visible !important;
 	pointer-events: auto !important;
-	margin: 0 !important;
-	padding: 0 !important;
-	width: 100% !important;
-	max-width: none !important;
-	display: block !important;
-	filter: brightness(var(--player-focus-brightness, 1));
+	filter: none;
 	z-index: 9100;
 }
 
-body.player-focus .module.ha-media > header,
-body.player-focus .module.ha-media .module-header {
-	display: none !important;
-}
-
-body.player-focus .module.ha-media .module-content {
-	margin: 0 !important;
-	padding: 0 !important;
-	width: 100% !important;
-}
-
+body.player-focus .module.ha-media .module-content,
 body.player-focus .module.ha-media .ha-touch-root {
+	flex: 1 1 auto;
 	width: 100%;
+	height: 100%;
+	min-height: 0;
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
 	gap: 0;
 	padding: 0;
+	margin: 0;
 }
 
-/* 全覽：封面橫向鋪滿在上，曲名／進度／控制鍵在封面下方 */
-body.player-focus .module.ha-media .ha-media-card {
-	display: flex;
-	flex-direction: column;
-	width: 100%;
-	min-height: 0;
-	height: auto;
-	border-radius: 0;
-	border: none;
-	overflow: visible;
-	background: #000;
-}
-
+/* 僅顯示正在播放的卡；多張時只留第一張可見 */
 body.player-focus .module.ha-media .ha-media-card.ha-media-hidden {
 	display: none !important;
 }
 
-body.player-focus .module.ha-media .ha-media-art-wrap {
+body.player-focus .module.ha-media .ha-media-card:not(.ha-media-hidden) ~ .ha-media-card:not(.ha-media-hidden) {
+	display: none !important;
+}
+
+body.player-focus .module.ha-media .ha-media-card {
 	position: relative;
-	inset: auto;
+	flex: 1 1 auto;
 	width: 100%;
-	height: 200px;
-	flex-shrink: 0;
+	height: 100%;
+	min-height: 0;
+	margin: 0;
+	border: none;
+	border-radius: 0;
+	background: var(--bg-primary);
+	box-shadow: none;
+	overflow: hidden;
+	display: block !important;
+}
+
+/* 封面置左（清晰、滿高正方形） */
+body.player-focus .module.ha-media .ha-media-art-wrap {
+	position: absolute !important;
+	top: 0 !important;
+	left: 0 !important;
+	right: auto !important;
+	bottom: 0 !important;
+	width: var(--panel-height) !important;
+	height: 100% !important;
+	flex: none;
+	z-index: 1;
+	background: #111;
+	overflow: hidden !important;
 }
 
 body.player-focus .module.ha-media .ha-media-art-img {
-	opacity: 1;
+	display: block;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 100%;
+	height: 100%;
 	object-fit: cover;
-	object-position: center;
+	object-position: center center;
+	opacity: 1;
+	filter: none;
+	transform: translate(-50%, -50%);
+}
+
+/* YouTube hqdefault 等為 4:3 畫布內嵌 16:9，上下自帶黑邊 → 放大裁切 */
+body.player-focus .module.ha-media .ha-media-art-img.ha-media-art-letterbox,
+body.player-focus .module.ha-media .ha-media-art-img[src*="ytimg.com"],
+body.player-focus .module.ha-media .ha-media-art-img[src*="youtube.com"],
+body.player-focus .module.ha-media .ha-media-art-img[src*="ggpht.com"] {
+	width: 134%;
+	height: 134%;
+	max-width: none;
+}
+
+body.player-focus .module.ha-media .ha-media-art-placeholder {
+	padding-top: 0;
+	align-items: center;
+	justify-content: center;
+	font-size: 4rem;
+	color: var(--border-subtle);
 }
 
 body.player-focus .module.ha-media .ha-media-art-overlay {
+	display: none !important;
+}
+
+/* 文字／進度／控制：置中於左側封面與右側亮度欄之間的可視區
+ * （純螢幕幾何中心會因封面較寬而看起來偏左） */
+body.player-focus .module.ha-media .ha-media-card-body {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: var(--focus-art-width);
+	right: var(--focus-brightness-col);
+	width: auto;
+	height: auto;
+	min-width: 0;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	padding: 16px 8px;
+	gap: 8px;
+	box-sizing: border-box;
+	background: transparent;
+	text-align: center;
+	pointer-events: none;
+}
+
+body.player-focus .module.ha-media .ha-media-card-body > * {
+	pointer-events: auto;
+}
+
+body.player-focus .module.ha-media .ha-media-device-label {
+	margin-bottom: 2px;
+	padding-right: 0;
+	width: 100%;
+	max-width: var(--focus-content-max);
+	font-size: 0.78rem;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--text-secondary);
+	text-align: center;
+	text-shadow: 0 1px 8px rgba(0, 0, 0, 0.85);
+}
+
+body.player-focus .module.ha-media .ha-media-title {
+	width: 100%;
+	max-width: var(--focus-content-max);
+	font-size: 2.35rem;
+	font-weight: 600;
+	letter-spacing: -0.03em;
+	line-height: 1.15;
+	color: var(--text-primary);
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	overflow: hidden;
+	white-space: normal;
+	text-align: center;
+	text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
+}
+
+body.player-focus .module.ha-media .ha-media-sub {
+	width: 100%;
+	max-width: var(--focus-content-max);
+	font-size: 1.2rem;
+	line-height: 1.3;
+	color: var(--text-secondary);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-align: center;
+	text-shadow: 0 1px 8px rgba(0, 0, 0, 0.85);
+}
+
+/* 可拖曳進度條 */
+body.player-focus .module.ha-media .ha-media-progress {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	max-width: var(--focus-content-max);
+	margin: 14px 0 0;
+	gap: 8px;
+}
+
+body.player-focus .module.ha-media .ha-media-progress-track {
+	position: relative;
+	height: 10px;
+	border-radius: var(--radius-pill);
+	background: rgba(255, 255, 255, 0.2);
+	overflow: visible;
+	cursor: pointer;
+	touch-action: none;
+}
+
+body.player-focus .module.ha-media .ha-media-progress-fill {
+	position: relative;
+	height: 100%;
+	border-radius: inherit;
+	background: var(--text-primary);
+	min-width: 0;
+}
+
+body.player-focus .module.ha-media .ha-media-progress-fill::after {
+	content: "";
+	position: absolute;
+	right: 0;
+	top: 50%;
+	transform: translate(50%, -50%);
+	width: 16px;
+	height: 16px;
+	border-radius: 50%;
+	background: var(--text-primary);
+	border: 1px solid rgba(0, 0, 0, 0.35);
+	box-shadow: 0 1px 6px var(--fill-press);
+	pointer-events: none;
+}
+
+body.player-focus .module.ha-media .ha-media-progress-times {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	font-size: 0.78rem;
+	font-variant-numeric: tabular-nums;
+	color: var(--text-tertiary);
+}
+
+body.player-focus .module.ha-media .ha-media-controls {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 22px;
+	width: 100%;
+	margin: 12px 0 0;
+}
+
+body.player-focus .module.ha-media .ha-media-btn {
+	width: 52px;
+	height: 52px;
+	border-radius: 50%;
+	border: 1px solid var(--border-subtle);
+	background: transparent;
+	color: var(--text-primary);
+}
+
+body.player-focus .module.ha-media .ha-media-btn-primary {
+	width: 68px;
+	height: 68px;
+	border-color: var(--border-on);
+	background: rgba(255, 255, 255, 0.1);
+}
+
+body.player-focus .module.ha-media .ha-media-btn i {
+	font-size: 1rem;
+}
+
+body.player-focus .module.ha-media .ha-media-btn-primary i {
+	font-size: 1.25rem;
+}
+
+/* 退出鈕 */
+body.player-focus .mmm-playerfocus-host {
+	top: 12px;
+	right: 12px;
+	z-index: 9400;
+}
+
+body.player-focus .mmm-playerfocus-btn {
+	min-width: 52px;
+	min-height: 32px;
+	padding: 6px 12px;
+	border: 1px solid rgba(255, 255, 255, 0.35);
+	border-radius: var(--radius-pill);
+	background: rgba(0, 0, 0, 0.65);
+	color: var(--text-primary);
+	font-size: 0.72rem;
+	font-weight: 600;
+}
+
+/* 亮度 overlay：滿版遮罩（Remote Control 未載入時仍可用） */
+#remote-control-overlay-brightness {
+	position: fixed !important;
+	top: 0 !important;
+	left: 0 !important;
+	width: 100vw !important;
+	height: 100vh !important;
+	pointer-events: none !important;
+	z-index: 90;
+}
+
+/* 亮度：右側垂直滑桿（上亮下暗）；驅動整頁亮度 overlay */
+body.player-focus .mmm-playerfocus-brightness {
+	position: absolute !important;
+	top: 52px;
+	right: 10px;
+	bottom: 14px;
+	left: auto !important;
+	width: 48px;
+	z-index: 9300;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+	gap: 8px;
+	padding: 10px 4px 12px;
+	border-radius: 14px;
+	background: rgba(0, 0, 0, 0.72);
+	border: 1px solid rgba(255, 255, 255, 0.16);
+	box-sizing: border-box;
+	filter: none !important;
+}
+
+body.player-focus #remote-control-overlay-brightness,
+html:has(body.player-focus) #remote-control-overlay-brightness {
+	z-index: 9200 !important;
+}
+
+body.player-focus .mmm-playerfocus-brightness-header {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	margin: 0;
+	width: 100%;
+	color: rgba(255, 255, 255, 0.85);
+	font-size: 0.62rem;
+	letter-spacing: 0.02em;
+}
+
+body.player-focus .mmm-playerfocus-brightness-meta {
+	order: -1;
+}
+
+body.player-focus .mmm-playerfocus-brightness-label {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 2px;
+}
+
+body.player-focus .mmm-playerfocus-brightness-label span {
 	display: none;
 }
 
-body.player-focus .module.ha-media .ha-media-card-body {
-	position: relative;
-	z-index: 1;
+body.player-focus .mmm-playerfocus-brightness-label i {
+	font-size: 0.85rem;
+	opacity: 0.9;
+}
+
+body.player-focus .mmm-playerfocus-brightness-value {
+	font-size: 0.68rem;
+	font-variant-numeric: tabular-nums;
+	color: rgba(255, 255, 255, 0.78);
+}
+
+body.player-focus .mmm-playerfocus-brightness-slider {
+	flex: 1 1 auto;
+	width: 22px;
 	min-height: 0;
-	justify-content: flex-start;
-	padding: 14px 16px 18px;
-	background: #000;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	accent-color: var(--text-primary);
+	touch-action: none;
+	writing-mode: vertical-lr;
+	direction: rtl;
+	-webkit-appearance: slider-vertical;
+	appearance: slider-vertical;
+}
+@media (prefers-reduced-motion: reduce) {
+	* {
+		animation: none !important;
+		transition: none !important;
+	}
 }

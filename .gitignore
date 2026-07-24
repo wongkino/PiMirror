@@ -1,3 +1,10 @@
+# Client local secrets / backups
+config/config.env
+config/config.env.full-backup
+
+# Core dumps
+core.*
+
 # Various Node ignoramuses.
 logs
 *.log
@@ -103,7 +110,6 @@ config/*
 config/homeassistant/magicmirror_screen.yaml
 
 # Local secrets / generated (redundant with config/* but explicit)
-config/config.env
 config/basepath.js
 
 # Local tooling / backups (not part of runtime)
