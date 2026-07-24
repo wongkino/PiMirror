@@ -30,8 +30,6 @@ services:
     devices:
       - /dev/dri:/dev/dri
       - /dev/gpiomem:/dev/gpiomem
-    group_add:
-      - video
-      - render
-      - gpio
     user: "${UID:-1000}:${GID:-1000}"
+    # 若 DHT/GPU 權限不足，確認 host 使用者已在 gpio、video、render 群組
+    #   sudo usermod -aG gpio,video,render $USER
