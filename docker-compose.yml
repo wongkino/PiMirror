@@ -1,0 +1,31 @@
+# PiMirror — pull and run on Raspberry Pi (kiosk + GPIO + Wayland from host).
+#
+#   docker compose up -d
+#
+# First time: copy and edit config
+#   cp config/config.env.sample config/config.env
+
+services:
+  pimirror:
+    image: ${PIMIRROR_IMAGE:-pimirror:latest}
+    build: .
+    container_name: pimirror
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      RUN_MODE: kiosk
+      DASHBOARD_PORT: "8090"
+      WAYLAND_DISPLAY: ${WAYLAND_DISPLAY:-wayland-0}
+      XDG_RUNTIME_DIR: ${XDG_RUNTIME_DIR:-/run/user/1000}
+      DISPLAY: ${DISPLAY:-:0}
+    volumes:
+      - ./config/config.env:/app/config/config.env:ro
+      - ${XDG_RUNTIME_DIR:-/run/user/1000}:${XDG_RUNTIME_DIR:-/run/user/1000}
+    devices:
+      - /dev/dri:/dev/dri
+      - /dev/gpiomem:/dev/gpiomem
+    group_add:
+      - video
+      - render
+      - gpio
+    user: "${UID:-1000}:${GID:-1000}"

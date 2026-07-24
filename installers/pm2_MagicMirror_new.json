@@ -1,8 +1,0 @@
-{
-  "apps" : [{
-    "name"        : "MagicMirror",
-    "cwd"         : "/home/wongkino",
-    "script"      : "/home/wongkino/MagicMirror/installers/mm.sh",
-    "watch"       : ["/home/wongkino/MagicMirror/config/config.js"]
-  }]
-}

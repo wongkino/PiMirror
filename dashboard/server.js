@@ -12,9 +12,9 @@ const { spawn } = require("node:child_process");
 const { loadEnvFile } = require("node:process");
 
 const ROOT = path.resolve(__dirname);
-const MM_ROOT = path.resolve(__dirname, "..");
+const PI_ROOT = path.resolve(__dirname, "..");
 const PUBLIC = path.join(ROOT, "public");
-const ENV_FILE = path.join(MM_ROOT, "config", "config.env");
+const ENV_FILE = path.join(PI_ROOT, "config", "config.env");
 const PORT = Number(process.env.DASHBOARD_PORT || 8090);
 
 if (fs.existsSync(ENV_FILE)) {
@@ -105,8 +105,8 @@ function parseIcsEvents (raw, { name, color }) {
 }
 
 async function readDht () {
-	const python = path.join(MM_ROOT, "GPIO", ".venv", "bin", "python");
-	const script = path.join(MM_ROOT, "GPIO", "dht11-json.py");
+	const python = path.join(PI_ROOT, "gpio", ".venv", "bin", "python");
+	const script = path.join(PI_ROOT, "gpio", "dht11-json.py");
 	if (!fs.existsSync(python) || !fs.existsSync(script)) {
 		return { ok: false, error: "missing_reader" };
 	}
@@ -731,5 +731,5 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, "0.0.0.0", () => {
-	console.log(`PiMirror http://127.0.0.1:${PORT}  (root ${MM_ROOT})`);
+	console.log(`PiMirror http://127.0.0.1:${PORT}  (root ${PI_ROOT})`);
 });

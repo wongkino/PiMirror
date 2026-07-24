@@ -1,137 +1,20 @@
-# Client local secrets / backups
+# Local secrets
 config/config.env
-config/config.env.full-backup
+.env
 
 # Core dumps
 core.*
 
-# Various Node ignoramuses.
-logs
+# Node
+node_modules/
 *.log
-npm-debug.log*
-pids
-*.pid
-*.seed
-lib-cov
-coverage
-.lock-wscript
-build/Release
-node_modules
-jspm_modules
-.npm
-.node_repl_history
 
-# Visual Studio Code ignoramuses.
-.vscode/
+# Python
+gpio/.venv/
+*.pyc
+__pycache__/
+
+# IDE / OS
 .cursor/
-
-# IDE Code ignoramuses.
-.idea/
-
-# Various Windows ignoramuses.
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-$RECYCLE.BIN/
-*.cab
-*.msi
-*.msm
-*.msp
-*.lnk
-
-# Various OSX ignoramuses.
+.vscode/
 .DS_Store
-.AppleDouble
-.LSOverride
-Icon
-._*
-.DocumentRevisions-V100
-.fseventsd
-.Spotlight-V100
-.TemporaryItems
-.Trashes
-.VolumeIcon.icns
-.AppleDB
-.AppleDesktop
-Network Trash Folder
-Temporary Items
-.apdisk
-
-# Various Linux ignoramuses.
-.fuse_hidden*
-.directory
-.Trash-*
-
-# Ignore third-party / local modules by default, then whitelist this setup.
-/modules/*
-!/modules/MMM-EnvEditor/
-!/modules/MMM-EnvEditor/**
-!/modules/MMM-FullPage/
-!/modules/MMM-FullPage/**
-!/modules/MMM-HKO-SpecialTips/
-!/modules/MMM-HKO-SpecialTips/**
-!/modules/MMM-HK-Transport-ETA/
-!/modules/MMM-HK-Transport-ETA/**
-!/modules/MMM-HomeKit/
-!/modules/MMM-HomeKit/**
-!/modules/MMM-LocalIP/
-!/modules/MMM-LocalIP/**
-!/modules/MMM-NowPlaying/
-!/modules/MMM-NowPlaying/**
-!/modules/MMM-page-indicator/
-!/modules/MMM-page-indicator/**
-!/modules/MMM-pages/
-!/modules/MMM-pages/**
-!/modules/MMM-PageSwipe/
-!/modules/MMM-PageSwipe/**
-!/modules/MMM-PlayerFocus/
-!/modules/MMM-PlayerFocus/**
-!/modules/MMM-HomeAssistant-Touch/
-!/modules/MMM-HomeAssistant-Touch/**
-!/modules/MMM-Remote-Control/
-!/modules/MMM-Remote-Control/**
-!/modules/MMM-Sonarr/
-!/modules/MMM-Sonarr/**
-!/modules/MMM-UniFiProtect/
-!/modules/MMM-UniFiProtect/**
-
-# Never commit module dependencies (install per module as needed).
-modules/**/node_modules/
-
-# Track shared config (env placeholders) but keep secrets local.
-config/*
-!config/config.js
-!config/config.js.sample
-!config/custom.css
-!config/custom.css.sample
-!config/config.env.sample
-!config/homeassistant/
-!config/homeassistant/**
-config/homeassistant/magicmirror_screen.yaml
-
-# Local secrets / generated (redundant with config/* but explicit)
-config/basepath.js
-
-# Local tooling / backups (not part of runtime)
-config-hk-toolkit/
-defaultmodules/weather/.backup-pre-animated/
-
-# Vim
-## swap
-[._]*.s[a-w][a-z]
-[._]s[a-w][a-z]
-
-## diff patch
-*.orig
-*.rej
-*.bak
-
-# Ignore positions file (#3518)
-js/positions.js
-
-# Ignore lock files other than package-lock.json
-pnpm-lock.yaml
-yarn.lock
-
-# Vitest temporary test files
-tests/**/.tmp/

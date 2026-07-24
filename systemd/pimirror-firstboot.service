@@ -1,0 +1,15 @@
+[Unit]
+Description=PiMirror PM2 startup (first boot after image flash)
+After=network-online.target graphical.target
+Wants=network-online.target
+ConditionPathExists=!/home/pi/.pimirror-pm2-setup
+
+[Service]
+Type=oneshot
+User=pi
+Environment=HOME=/home/pi
+ExecStart=/bin/bash -c 'pm2 startup systemd -u pi --hp /home/pi | grep -v "PM2" | bash && pm2 save && touch /home/pi/.pimirror-pm2-setup'
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,14 @@
+# API only — no display/GPIO (dev or behind reverse proxy)
+services:
+  pimirror:
+    image: ${PIMIRROR_IMAGE:-pimirror:latest}
+    build: .
+    container_name: pimirror-server
+    restart: unless-stopped
+    ports:
+      - "${DASHBOARD_PORT:-8090}:8090"
+    environment:
+      RUN_MODE: server
+      DASHBOARD_PORT: "8090"
+    volumes:
+      - ./config/config.env:/app/config/config.env:ro

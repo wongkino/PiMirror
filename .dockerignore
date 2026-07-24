@@ -1,0 +1,27 @@
+# Git / IDE
+.git
+.gitignore
+.cursor
+.vscode
+
+# Local secrets & runtime
+config/config.env
+config/*.backup
+*.log
+core.*
+
+# Node (rebuilt in image)
+node_modules
+
+# Python venv (rebuilt in image)
+gpio/.venv
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Docs / misc
+README.md
+gpio/README.md
+systemd
